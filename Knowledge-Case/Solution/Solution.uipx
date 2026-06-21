@@ -1,0 +1,20 @@
+{
+  "SolutionId": "bc4b15d1-0af8-457b-9ed2-cbfc7dd74294",
+  "Projects": [
+    {
+      "Id": "1c5d001f-ff89-4a4e-92ab-2af016323581",
+      "Type": "CaseManagement",
+      "ProjectRelativePath": "Maestro Case/project.uiproj"
+    },
+    {
+      "Id": "d49a151d-30a5-4b86-964b-5fb080757f12",
+      "Type": "Process",
+      "ProjectRelativePath": "SimpleApprovalApp/project.uiproj"
+    },
+    {
+      "Id": "87c77823-402f-4b65-a388-4a00d468259f",
+      "Type": "Agent",
+      "ProjectRelativePath": "Agent 1/project.uiproj"
+    }
+  ]
+}

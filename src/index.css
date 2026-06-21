@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-page text-ink-700 font-sans antialiased;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tightest text-ink-900;
+  }
+
+  /* Thin, elegant scrollbars (light) */
+  *::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(20, 23, 28, 0.14);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(20, 23, 28, 0.26);
+    background-clip: padding-box;
+  }
+
+  ::selection {
+    background: rgba(47, 109, 255, 0.18);
+  }
+}
+
+@layer components {
+  /* ---- Pill chip (icon + mono label) — TwelveLabs outlined chip ---- */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-mono font-medium leading-none;
+  }
+  /* kept the .chip-dark name so existing usages restyle for free */
+  .chip-dark {
+    @apply border-ink-900/[0.10] bg-ink-900/[0.03] text-ink-600;
+  }
+  .chip-light {
+    @apply border-ink-900/[0.10] bg-white text-ink-700 shadow-card-soft;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ink {
+    @apply bg-ink-900 text-white hover:bg-ink-800 hover:shadow-glow;
+  }
+  .btn-light {
+    @apply border border-ink-900/[0.10] bg-white text-ink-900 shadow-card-soft hover:border-ink-900/20 hover:shadow-card-light;
+  }
+  .btn-dark {
+    @apply border border-ink-900/[0.12] bg-white text-ink-800 hover:bg-ink-900/[0.04];
+  }
+  .btn-brand {
+    @apply bg-brand-500 text-white hover:bg-brand-600 hover:shadow-glow;
+  }
+
+  /* ---- Surfaces ---- */
+  .panel {
+    @apply rounded-2xl border border-ink-900/[0.08] bg-white shadow-card-light;
+  }
+  /* Raised, crisply-defined card for dashboards — lifts on hover */
+  .card-raised {
+    @apply rounded-2xl border border-ink-900/[0.08] bg-white shadow-card-light transition-all duration-200;
+  }
+  .card-raised:hover {
+    @apply -translate-y-0.5 border-ink-900/[0.12] shadow-glow;
+  }
+  .panel-tight {
+    @apply rounded-xl border border-ink-900/[0.07] bg-paper-50;
+  }
+
+  /* Soft pastel gradient card (the Search/Analyze/Embed look) */
+  .pastel-card {
+    @apply rounded-4xl border border-ink-900/[0.06] shadow-card-light;
+  }
+
+  .hairline {
+    @apply border-ink-900/[0.07];
+  }
+
+  /* Decorative gradient text */
+  .text-sheen {
+    @apply bg-brand-sheen bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  /* Subtle dotted grid for light surfaces */
+  .bg-dots {
+    background-image: radial-gradient(rgba(20, 23, 28, 0.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  /* kept name so existing usages get a light grid */
+  .bg-grid-dark {
+    background-image: radial-gradient(rgba(20, 23, 28, 0.045) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .bg-grid-fade {
+    -webkit-mask-image: radial-gradient(70% 70% at 50% 0%, #000 0%, transparent 80%);
+    mask-image: radial-gradient(70% 70% at 50% 0%, #000 0%, transparent 80%);
+  }
+  .glass {
+    @apply bg-white/70 backdrop-blur-md;
+  }
+}

@@ -1,0 +1,31 @@
+# ── Secrets & local config (NEVER commit) ──────────────────────────
+.env
+.env.*
+!.env.example
+*.local
+# UiPath auth tokens written by `uipath auth`
+**/.uipath/
+**/.local/
+
+# ── Python ──────────────────────────────────────────────────────────
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# ── Node / build ────────────────────────────────────────────────────
+node_modules
+**/node_modules/
+dist
+dist-ssr
+
+# ── Logs & scratch ──────────────────────────────────────────────────
+*.log
+server/cf*.log
+_*.json
+
+# ── OS / editor ─────────────────────────────────────────────────────
+.DS_Store
+.vscode/*
+!.vscode/extensions.json

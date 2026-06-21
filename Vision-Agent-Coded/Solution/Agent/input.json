@@ -1,0 +1,9 @@
+{
+  "case_id": "CASE-0916",
+  "site_id": "DEL-0473",
+  "bucket_name": "Vision-Test-Bucket",
+  "media_path": "uipath-input-video-AERIAL CORRODED PLUG NEWWW.mp4",
+  "text": "Aerial RF connector looks corroded again — green/white deposits at the plug.",
+  "folder_path": "Shared",
+  "backend_url": ""
+}

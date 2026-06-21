@@ -1,0 +1,12 @@
+{
+  "ProjectAppMetadata": {
+    "SimpleApproval_RejectButton_click.xaml": {
+      "AppFormId": "id3f8a5782a09247da949e81fc65ef98e7",
+      "IsAppQueryBuilder": null
+    },
+    "SimpleApproval_ApproveButton_click.xaml": {
+      "AppFormId": "id3f8a5782a09247da949e81fc65ef98e7",
+      "IsAppQueryBuilder": null
+    }
+  }
+}
