@@ -1,0 +1,133 @@
+{
+  "version": "2.1",
+  "description": "FOREMAN crew model. Vision perceives; the Supervisor orchestrates. EVERY case runs the always-on Diagnosis & Recommendation Engine (the brain: Skills + Context-Grounding reference docs + Data Fabric + Memory + Neo4j). The Supervisor then assembles ONLY the dynamic specialists whose invoke_when the findings satisfy - and can JUSTIFY why it skipped the others. 10 dynamic specialists.",
+
+  "always_on": {
+    "id": "diagnosis_recommendation_engine",
+    "name": "Diagnosis & Recommendation Engine",
+    "kind": "coded",
+    "role": "The core brain - runs on EVERY case. Where FOREMAN's value ties together: match a learned Skill (hard gate), cite the reference PDFs, read the asset master record (Data Fabric), recall Agent Memory, reason to a root cause, emit the cited fix; on close write/strengthen the Skill.",
+    "reads": ["context_grounding.skills", "context_grounding.reference_docs", "data_fabric.asset", "agent_memory", "neo4j.causal"],
+    "input": ["perception", "site_id", "asset_id", "worker_text"],
+    "output": ["skill_hit", "skill_status", "root_cause", "confidence", "alternatives_ruled_out", "recommendation", "citations", "what_differs"]
+  },
+
+  "dynamic_specialists": [
+    {
+      "id": "fleet_blast_radius",
+      "name": "Fleet & Blast-Radius",
+      "kind": "coded",
+      "reads": ["neo4j"],
+      "output": ["systemic", "affected_assets", "criticality_rank", "recommendation"],
+      "invoke_when": "the asset shares a failure-propagating link with others - same batch, vendor, firmware, power feeder, cooling loop, or install crew",
+      "horizontal": "telecom cable batch, solar connector lot / install-crew, IMM resin lot, transformer feeder"
+    },
+    {
+      "id": "warranty_entitlement",
+      "name": "Warranty & Entitlement",
+      "kind": "low_code",
+      "reads": ["data_fabric.warranty", "data_fabric.batch", "data_fabric.vendor"],
+      "output": ["vendor", "warranty_active", "vendor_liable", "claim_basis", "recovery_inr"],
+      "invoke_when": "the asset is in a warranty window AND the root cause is a vendor / batch / spec / manufacturing defect (a claimable cost) - NOT for field-workmanship faults",
+      "horizontal": "cable spec defect, connector-lot defect, machine OEM defect, transformer supplier defect"
+    },
+    {
+      "id": "sla_commercial_impact",
+      "name": "SLA & Commercial Impact",
+      "kind": "coded",
+      "reads": ["data_fabric.service_contract", "data_fabric.tenant", "data_fabric.customer"],
+      "output": ["exposure_inr_per_hr", "customers_affected", "downtime_cost", "priority_uplift"],
+      "invoke_when": "the asset/site serves multiple tenants/customers/an SLA AND the commercial exposure could CHANGE the priority or action",
+      "horizontal": "tower tenants (multi-SLA), solar PPA / generation, factory line output, building occupants"
+    },
+    {
+      "id": "safety_compliance",
+      "name": "Safety & Compliance",
+      "kind": "coded",
+      "reads": ["context_grounding.codes_and_standards"],
+      "output": ["safety_critical", "protocol", "standard_clause", "blockers"],
+      "invoke_when": "the matched skill has safety_protocol=true, OR the equipment/failure is hazardous (arc/fire, fall, derailment, pressure, HV)",
+      "can_block_auto_resolve": true,
+      "horizontal": "PV DC arc (NEC 690.11), lift/escalator (EN 81 / A17.1), rail hot-box, HV transformer, pressure systems"
+    },
+    {
+      "id": "parts_logistics",
+      "name": "Parts & Logistics",
+      "kind": "low_code",
+      "reads": ["data_fabric.inventory", "data_fabric.spare"],
+      "output": ["in_stock", "location", "lead_time_days", "substitute", "blocks_fix"],
+      "invoke_when": "the recommended fix needs a replacement part or consumable",
+      "horizontal": "matched MC4 pair, NRV / check-ring kit, bimetallic screw, HV bushing, bearing, diaphragm"
+    },
+    {
+      "id": "field_dispatch",
+      "name": "Field Dispatch & Scheduling",
+      "kind": "coded",
+      "reads": ["data_fabric.crew", "data_fabric.roster", "maps_api"],
+      "output": ["crew_id", "skill_match", "certification_ok", "eta_min", "route"],
+      "invoke_when": "a physical repair, swap or inspection visit is required",
+      "horizontal": "tower rigger, CERTIFIED PV technician, IMM service engineer, licensed lift inspector"
+    },
+    {
+      "id": "telemetry_predictive",
+      "name": "Telemetry & Predictive",
+      "kind": "coded",
+      "reads": ["iot_telemetry", "data_fabric.asset"],
+      "output": ["trend", "anomaly_score", "remaining_useful_life", "corroborates_perception", "fix_now_or_schedule"],
+      "invoke_when": "the fault is INCIPIENT / degrading and a sensor trend would decide fix-now-vs-schedule - NOT when the part has already hard-failed",
+      "horizontal": "RF VSWR/PIM, PV string current + IR thermal, cushion / vibration SPC, transformer DGA, bearing temp"
+    },
+    {
+      "id": "vendor_supply_chain",
+      "name": "Vendor & Supply-Chain Liaison",
+      "kind": "low_code",
+      "reads": ["data_fabric.vendor", "data_fabric.batch", "vendor_recall_feed"],
+      "output": ["known_defect_or_recall", "rma_path", "approved_replacement_source", "supplier_escalation"],
+      "invoke_when": "the root cause implicates a SUPPLIER - a batch/lot defect, a recall, counterfeit / substituted parts (procurement) - NOT a one-off field workmanship fault",
+      "horizontal": "cable batch recall, counterfeit connector lot, machine OEM bulletin, transformer supplier"
+    },
+    {
+      "id": "site_access_weather",
+      "name": "Site Access & Weather Window",
+      "kind": "coded",
+      "reads": ["weather_api", "data_fabric.site"],
+      "output": ["safe_window", "weather_blockers", "access_constraints", "earliest_safe_time"],
+      "invoke_when": "the fix is outdoor / at height / in a live environment / weather-sensitive, or site access is constrained",
+      "horizontal": "solar (dry + daylight), tower climb (wind), rail (track possession), substation (permit-to-work)"
+    },
+    {
+      "id": "cost_optimization",
+      "name": "Cost Optimization (Repair vs Replace)",
+      "kind": "coded",
+      "reads": ["data_fabric.asset", "data_fabric.cost"],
+      "output": ["decision", "whole_life_cost", "capex_flag", "rationale"],
+      "invoke_when": "there is a GENUINE repair-vs-replace-vs-upgrade trade-off - NOT when the fix is forced/trivial",
+      "horizontal": "rebuild vs replace a spindle, repair vs replace a transformer, patch vs re-cable a run"
+    }
+  ],
+
+  "mc4_demo_invocation": {
+    "scenario": "Field engineer films a melted MC4 connector with frayed copper at the crimp (PV string).",
+    "always_on": ["diagnosis_recommendation_engine"],
+    "invoked": [
+      {"id": "safety_compliance", "why": "DC arc + fire is safety-critical (NEC 690.11). Isolate under no-load + LOTO; BLOCKS auto-resolve - the human gate is mandatory. This is the non-negotiable one."},
+      {"id": "fleet_blast_radius", "why": "a poor-crimp / cross-mating root cause is a SYSTEMIC install defect, not a one-off. Audit the same installer's other strings and sites - one finding can mean dozens of latent fire risks."},
+      {"id": "parts_logistics", "why": "the fix needs a MATCHED GENUINE MC4 pair + the correct crimp die. Confirm stock and lead time before a truck rolls."},
+      {"id": "field_dispatch", "why": "physical re-termination is required, by a CERTIFIED PV technician - DC arc work is not for any hand."},
+      {"id": "site_access_weather", "why": "outdoor DC electrical work needs a DRY weather window and adequate daylight; schedule into a safe window, not into rain."}
+    ],
+    "not_invoked": [
+      {"id": "warranty_entitlement", "why": "the VISIBLE frayed copper at the crimp is a FIELD WORKMANSHIP defect, not a vendor spec/manufacturing defect - there is no claimable warranty path. Opening a claim would be wrong and waste a cycle. (Contrast the RF case, where a non-marine SPEC defect WAS claimable.)"},
+      {"id": "vendor_supply_chain", "why": "no confirmed supplier defect or recall - workmanship is the lead cause. HELD for re-engagement only if the Fleet audit proves the failures are actually systemic cross-mating (a procurement substitution); don't escalate a supplier on a crew's bad crimp."},
+      {"id": "sla_commercial_impact", "why": "a single PV string is a small, bounded generation loss - and the action is ALREADY MANDATED by safety (fire risk). A commercial number cannot change a fire-risk decision, so computing one is wasted effort. (Contrast the RF tower: multi-tenant ~Rs 48k/hr DID drive the action.)"},
+      {"id": "telemetry_predictive", "why": "the connector has ALREADY HARD-FAILED - melted, live now. There is nothing incipient to trend or predict, and the string-current signal is already lost. The decision is immediate; a trend analysis would only add latency."},
+      {"id": "cost_optimization", "why": "no repair-vs-replace trade-off exists - a charred connector is ALWAYS cut out and replaced; you never 'repair' a fire risk or run it to failure. Safety-optimal and cost-optimal are identical, so there is nothing to optimise."}
+    ]
+  },
+
+  "example_crews": {
+    "pv_mc4_connector_burn (the live demo)": ["diagnosis_recommendation_engine", "safety_compliance", "fleet_blast_radius", "parts_logistics", "field_dispatch", "site_access_weather"],
+    "coastal_rf_corrosion": ["diagnosis_recommendation_engine", "warranty_entitlement", "fleet_blast_radius", "sla_commercial_impact"],
+    "imm_checkring_suckback": ["diagnosis_recommendation_engine", "parts_logistics", "telemetry_predictive", "field_dispatch", "cost_optimization"]
+  }
+}

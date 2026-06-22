@@ -70,35 +70,37 @@ export const VENDORS: Vendor[] = [
 ]
 
 // ── Context Grounding: documents the agents cite (excerpts) ─────────────────
+// Horizontal by design — the library spans asset classes; the agent retrieves
+// whatever the case needs. (MC4 solar docs lead because that's the live demo.)
 export const GROUNDING_DOCS: { file: string; line: string; tag: string }[] = [
   {
-    file: 'rf-cable-spec-NG-22.pdf',
-    line: 'NG-BATCH-22: PVC sheath, non-marine rating. Not for coastal/high-salinity sites; marine-grade (NG-30) advised above 80% humidity.',
+    file: 'mc4-connector-install-spec.pdf',
+    line: 'IEC 62852 / UL 6703: never cross-mate MC4 brands. Mixed mating raises contact resistance; I²R heating drives thermal runaway and DC arcing.',
     tag: 'spec',
   },
   {
-    file: 'corrosion-troubleshooting.pdf',
-    line: 'Green/white deposits at the connector = salt-driven galvanic corrosion. Distinguish from surface discolouration (no pitting).',
-    tag: 'manual',
+    file: 'pv-dc-arc-safety-bulletin.pdf',
+    line: 'NEC 690.11 / 690.12: a melted connector is a DC-arc and fire hazard. Isolate the string DC-safe before any service.',
+    tag: 'safety',
   },
   {
-    file: 'dg-maintenance-manual.pdf',
-    line: 'Knocking under load with normal oil pressure → injector timing or worn bearings; schedule a swap if recurring.',
-    tag: 'manual',
+    file: 'connector-cross-mating-warning.pdf',
+    line: 'Cross-mated joints recur by install crew and connector lot, not by module batch — audit the crew and requalify the part lot.',
+    tag: 'anti-pattern',
   },
   {
-    file: 'sla-master-agreement.pdf',
-    line: 'Downtime penalties accrue per tenant per hour from the SLA response breach.',
-    tag: 'sla',
+    file: 'rf-cable-spec-NG-22.pdf',
+    line: 'Non-marine PVC sheath: not for coastal/high-salinity sites; marine-grade advised above 80% humidity.',
+    tag: 'spec',
   },
   {
-    file: 'few-shot-cases.md',
-    line: 'Worked coastal-corrosion examples that teach the reasoning style.',
-    tag: 'few-shot',
+    file: 'iso-20816-vibration.pdf',
+    line: 'Rotating-plant vibration zones A–D: trend each unit against the fleet mean — do not threshold on a single reading.',
+    tag: 'standard',
   },
   {
     file: 'anti-patterns.md',
-    line: 'Do NOT call discolouration corrosion without pitting/deposits. Do NOT assume workmanship when spec mismatch + environment explain it.',
+    line: 'Do NOT assume a shared batch is the cause when a healthy unit shares it. Do NOT call discolouration a fault without pitting/deposits.',
     tag: 'anti-pattern',
   },
 ]
@@ -108,7 +110,7 @@ export const STORES = [
   {
     id: 'data_fabric',
     name: 'Data Fabric',
-    holds: 'Site · Asset · Warranty · Tenant · Vendor · Batch',
+    holds: 'Asset · Site · Crew · Batch · Part-lot · Vendor · Warranty',
     agentsDo: 'read + write records',
     hue: 'mint' as const,
   },
@@ -129,7 +131,7 @@ export const STORES = [
   {
     id: 'neo4j',
     name: 'Neo4j Graph',
-    holds: 'The connection brain — blast-radius + causal paths',
+    holds: 'The connection brain — blast-radius, common-cause, criticality',
     agentsDo: 'query with Cypher',
     hue: 'periwinkle' as const,
   },

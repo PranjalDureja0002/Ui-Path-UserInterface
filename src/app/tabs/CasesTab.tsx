@@ -7,8 +7,9 @@ import { clsx } from '../../lib/format'
 import { TONE_HEX, type Tone } from '../../lib/hues'
 import { STAGES, type CaseView } from '../../types'
 
-// The two demo scenarios this queue can spawn.
-const SCENARIO_META: Record<'A' | 'B', { caseId: string; site: string }> = {
+// The demo scenarios this queue can spawn (C — the MC4 solar case — leads).
+const SCENARIO_META: Record<'A' | 'B' | 'C', { caseId: string; site: string }> = {
+  C: { caseId: 'CASE-PV-0758', site: 'RJ-SOLAR-1' },
   A: { caseId: 'CASE-0916', site: 'DEL-0473' },
   B: { caseId: 'CASE-1042', site: 'MUM-0210' },
 }
@@ -39,12 +40,12 @@ export function CasesTab() {
     navigate('/app/console')
   }
 
-  const openScenario = (id: 'A' | 'B') => {
+  const openScenario = (id: 'A' | 'B' | 'C') => {
     loadScenario(id)
     navigate('/app/console')
   }
 
-  const missing = (['A', 'B'] as const).filter(
+  const missing = (['C', 'A', 'B'] as const).filter(
     (id) => !order.includes(SCENARIO_META[id].caseId),
   )
 
@@ -126,7 +127,7 @@ function CaseCard({
       <div className="p-5 pl-6">
         {/* Top row — scenario + status */}
         <div className="flex items-center justify-between gap-3">
-          <Chip className="!text-[10px]">{c.scenario === 'A' ? 'Case A' : 'Case B'}</Chip>
+          <Chip className="!text-[10px]">Case {c.scenario}</Chip>
           <Badge tone={statusTone}>{c.status}</Badge>
         </div>
 

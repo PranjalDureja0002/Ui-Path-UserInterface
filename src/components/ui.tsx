@@ -53,13 +53,13 @@ export function TabHeader({
   return (
     <div className={clsx('flex flex-wrap items-end justify-between gap-x-6 gap-y-4', className)}>
       <div className="max-w-2xl">
-        <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-600">
+        <div className="inline-flex items-center rounded-full border border-ink-900/[0.08] bg-paper-50 px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-ink-500">
           {eyebrow}
         </div>
-        <h1 className="mt-2.5 font-display text-[27px] font-semibold leading-[1.06] tracking-[-0.02em] text-ink-900 sm:text-[33px]">
+        <h1 className="mt-4 font-serif text-[31px] font-normal leading-[1.07] tracking-[-0.012em] text-ink-900 sm:text-[42px]">
           {title}
         </h1>
-        {sub && <p className="mt-2.5 max-w-xl text-[14.5px] leading-relaxed text-ink-500">{sub}</p>}
+        {sub && <p className="mt-3.5 max-w-xl text-[15px] leading-relaxed text-ink-500">{sub}</p>}
       </div>
       {right && <div className="flex flex-wrap items-center gap-2">{right}</div>}
     </div>

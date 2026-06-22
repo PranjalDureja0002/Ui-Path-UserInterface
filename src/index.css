@@ -46,7 +46,7 @@
   }
 
   ::selection {
-    background: rgba(47, 109, 255, 0.18);
+    background: rgba(20, 23, 28, 0.10);
   }
 }
 
@@ -80,16 +80,16 @@
     @apply bg-brand-500 text-white hover:bg-brand-600 hover:shadow-glow;
   }
 
-  /* ---- Surfaces ---- */
+  /* ---- Surfaces — flat, hairline-bordered, editorial ---- */
   .panel {
-    @apply rounded-2xl border border-ink-900/[0.08] bg-white shadow-card-light;
+    @apply rounded-2xl border border-ink-900/[0.07] bg-white shadow-card-soft;
   }
-  /* Raised, crisply-defined card for dashboards — lifts on hover */
+  /* Raised, crisply-defined card for dashboards — lifts gently on hover */
   .card-raised {
-    @apply rounded-2xl border border-ink-900/[0.08] bg-white shadow-card-light transition-all duration-200;
+    @apply rounded-2xl border border-ink-900/[0.07] bg-white shadow-card-flat transition-all duration-200;
   }
   .card-raised:hover {
-    @apply -translate-y-0.5 border-ink-900/[0.12] shadow-glow;
+    @apply -translate-y-0.5 border-ink-900/[0.12] shadow-card-light;
   }
   .panel-tight {
     @apply rounded-xl border border-ink-900/[0.07] bg-paper-50;

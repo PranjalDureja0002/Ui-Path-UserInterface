@@ -13,8 +13,8 @@ export const AGENTS: AgentDef[] = [
     id: 'vision',
     name: 'Vision',
     kind: 'coded',
-    role: 'One Gemini call reads the picture (corrosion) and the sound (knock) together — strict JSON',
-    reads: 'Gemini · media URLs',
+    role: 'One multimodal call reads the image, sound and thermal together → findings as strict JSON',
+    reads: 'Vision model · media URLs',
     hue: 'lilac',
   },
   {
@@ -27,10 +27,10 @@ export const AGENTS: AgentDef[] = [
   },
   {
     id: 'sla',
-    name: 'SLA / Risk',
+    name: 'Impact / Risk',
     kind: 'coded',
-    role: 'Crew ETA from traffic, then penalty/hr × tenants × hours = exposure',
-    reads: 'Data Fabric · SLA, Tenant + traffic API',
+    role: 'Crew ETA from traffic, then penalty/hr × stakeholders × hours (or generation lost) = exposure',
+    reads: 'Data Fabric · contracts + traffic API',
     hue: 'amber',
   },
   {
@@ -45,7 +45,7 @@ export const AGENTS: AgentDef[] = [
     id: 'fleet',
     name: 'Fleet',
     kind: 'coded',
-    role: 'Blast-radius Cypher: other sites on the same failing batch in the same environment',
+    role: 'Multi-factor blast-radius + common-cause Cypher: every unit sharing a failing factor (batch, crew or part lot)',
     reads: 'Neo4j',
     hue: 'periwinkle',
   },

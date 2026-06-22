@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CheckCircle2, Phone, PhoneOff, ShieldCheck } from 'lucide-react'
+import { CheckCircle2, Phone, ShieldCheck } from 'lucide-react'
 import { useStore } from '../../store/store'
-import { Badge, Chip, Empty, Eyebrow, TabHeader } from '../../components/ui'
+import { Empty, TabHeader } from '../../components/ui'
 import { clsx } from '../../lib/format'
+import phoneCall from '../../assets/phone-call.jpg'
 import type { CallState, CaseView } from '../../types'
 
 export function CallsTab() {
@@ -10,31 +12,23 @@ export function CallsTab() {
   if (!c) return <Empty icon={<Phone size={22} />} text="No active case — press play in the top bar." />
 
   const call = c.call
-  const live = call.status === 'dialing' || call.status === 'connected'
-  const noCall = call.status === 'idle'
+  const hasTranscript = call.lines.length > 0
 
   return (
     <div className="space-y-7">
       <TabHeader
         eyebrow="Escalation · Twilio voice"
         title="The phone call"
-        sub="Risk above 0.70 triggers a real call; FOREMAN captures the decision."
+        sub="Risk above 0.70 triggers a real call to the manager; FOREMAN states the case and captures the decision."
       />
 
-      {/* No-call info case */}
-      {noCall ? (
-        <NoCallPanel c={c} />
-      ) : (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-          {/* Left — call card + transcript */}
-          <div className="space-y-5 lg:col-span-7">
-            <CallCard call={call} live={live} />
-            <Transcript call={call} />
-          </div>
+      <CallStage c={c} />
 
-          {/* Right — decision */}
+      {(hasTranscript || call.decision) && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-7">{hasTranscript && <Transcript call={call} />}</div>
           <div className="lg:col-span-5">
-            <DecisionCard call={call} />
+            {call.decision ? <DecisionCard call={call} /> : <DecisionPending />}
           </div>
         </div>
       )}
@@ -42,109 +36,128 @@ export function CallsTab() {
   )
 }
 
-// ── Twilio-style call card with status pill + calling visual ─────────────────
-function CallCard({ call, live }: { call: CallState; live: boolean }) {
+// ── Cinematic call hero (phone-wave image + adaptive state) ─────────────────
+function CallStage({ c }: { c: CaseView }) {
+  const call = c.call
+  const dialing = call.status === 'dialing'
   const connected = call.status === 'connected'
   const ended = call.status === 'ended'
+  const idle = call.status === 'idle'
+  const risk = c.risk_score
+  const pending = idle && risk != null && risk >= 0.7
+  const resolved = idle && risk != null && risk < 0.7
+  const live = dialing || connected
+
+  const title = ended
+    ? 'Authorised by voice'
+    : connected
+      ? 'Connected'
+      : dialing
+        ? 'Dialing the manager…'
+        : pending
+          ? 'Escalation pending'
+          : resolved
+            ? 'No call needed'
+            : 'Standing by'
 
   return (
-    <div className="panel p-5">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          {/* Phone icon in colored circle with pulsing rings while live */}
-          <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-            {live && (
-              <>
-                <span
-                  className="absolute inset-0 animate-ping rounded-full opacity-50"
-                  style={{ background: connected ? '#1aa251' : '#c77b08' }}
-                />
-                <span
-                  className="absolute -inset-1.5 animate-ping rounded-full opacity-30"
-                  style={{ animationDelay: '0.3s', background: connected ? '#1aa251' : '#c77b08' }}
-                />
-                <span
-                  className="absolute -inset-3 animate-ping rounded-full opacity-20"
-                  style={{ animationDelay: '0.6s', background: connected ? '#1aa251' : '#c77b08' }}
-                />
-              </>
+    <div className="panel relative overflow-hidden">
+      <div className="relative h-[260px] w-full overflow-hidden bg-carbon-950 sm:h-[300px]">
+        {/* phone-wave image, right side, faded into the dark stage */}
+        <img
+          src={phoneCall}
+          alt=""
+          className="absolute right-0 top-0 h-full w-[64%] object-cover"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent 0%, #000 38%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, #000 38%)',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-carbon-950 via-carbon-950/72 to-carbon-950/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-carbon-950/70 to-transparent" />
+
+        {/* live glow over the wave when the line is active */}
+        {live && (
+          <div
+            className="absolute right-[22%] top-1/2 h-44 w-72 -translate-y-1/2 animate-pulse rounded-full blur-3xl"
+            style={{ background: connected ? 'rgba(80,180,255,0.34)' : 'rgba(245,166,35,0.30)' }}
+          />
+        )}
+
+        {/* content */}
+        <div className="absolute inset-0 flex flex-col justify-center p-7 sm:p-9">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">
+            <Phone size={13} /> Escalation · Twilio voice
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <h2 className="font-display text-[30px] font-bold leading-none tracking-tight text-white sm:text-[36px]">
+              {title}
+            </h2>
+            <CallPill status={call.status} pending={pending} resolved={resolved} />
+          </div>
+          <div className="mt-3 max-w-md text-[13px] leading-relaxed text-white/75">
+            {idle ? (
+              pending ? (
+                'High risk — FOREMAN is preparing the escalation call to the manager.'
+              ) : resolved ? (
+                <>Risk <span className="font-mono font-semibold text-white">{risk}</span> is below the 0.70 threshold — auto-resolved and logged.</>
+              ) : (
+                'A call only happens when the risk score crosses 0.70.'
+              )
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <span className="text-white/55">to</span>
+                <span className="font-medium text-white">{call.toRole}</span>
+                <span className="text-white/30">·</span>
+                <span className="font-mono text-white/80">{call.to}</span>
+              </span>
             )}
-            <div
-              className="relative flex h-14 w-14 items-center justify-center rounded-full"
-              style={{
-                background: ended ? '#969ca522' : connected ? '#1aa25122' : '#c77b0822',
-                color: ended ? '#969ca5' : connected ? '#1aa251' : '#c77b08',
-                border: `1px solid ${ended ? '#969ca544' : connected ? '#1aa25144' : '#c77b0844'}`,
-              }}
-            >
-              {ended ? <PhoneOff size={22} /> : <Phone size={22} />}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[11px] uppercase tracking-wide text-ink-400">
-              {call.toRole ?? 'Escalation contact'}
-            </div>
-            <div className="mt-0.5 font-mono text-[15px] font-semibold text-ink-900">
-              {call.to ?? '—'}
-            </div>
           </div>
         </div>
-
-        <StatusPill call={call} />
       </div>
-
-      {/* Animated sound bars while connected */}
-      {connected && (
-        <div className="mt-5 flex items-end gap-1 border-t border-ink-900/[0.07] pt-4">
-          {Array.from({ length: 28 }).map((_, i) => (
-            <motion.span
-              key={i}
-              className="w-1 rounded-full bg-ok/60"
-              initial={{ height: 4 }}
-              animate={{ height: [4, 6 + ((i * 7) % 22), 4] }}
-              transition={{
-                duration: 0.8 + (i % 5) * 0.12,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: (i % 7) * 0.06,
-              }}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
 
-function StatusPill({ call }: { call: CallState }) {
-  if (call.status === 'dialing')
-    return (
-      <Badge tone="warn" className="animate-pulse">
-        Dialing…
-      </Badge>
-    )
-  if (call.status === 'connected')
-    return (
-      <Badge tone="ok">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-70" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-ok" />
-        </span>
-        Connected
-      </Badge>
-    )
-  if (call.status === 'ended')
-    return <Chip className="text-ink-400">Call ended</Chip>
-  return null
+function CallPill({
+  status,
+  pending,
+  resolved,
+}: {
+  status: CallState['status']
+  pending?: boolean
+  resolved?: boolean
+}) {
+  if (status === 'dialing') return <DarkPill hex="#f5a623" pulse>Dialing…</DarkPill>
+  if (status === 'connected') return <DarkPill hex="#34c759" live>Connected</DarkPill>
+  if (status === 'ended') return <DarkPill hex="#34c759">Authorised</DarkPill>
+  if (pending) return <DarkPill hex="#f5a623" pulse>Escalation pending</DarkPill>
+  if (resolved) return <DarkPill hex="#34c759">Auto-resolved</DarkPill>
+  return <DarkPill hex="#9aa1aa">Idle</DarkPill>
 }
 
-// ── Chat-style transcript ────────────────────────────────────────────────────
-function Transcript({ call }: { call: CallState }) {
-  if (call.lines.length === 0) return null
+function DarkPill({ children, hex, pulse, live }: { children: ReactNode; hex: string; pulse?: boolean; live?: boolean }) {
   return (
-    <div className="panel p-4">
-      <Eyebrow className="px-1 pb-3">Live transcript</Eyebrow>
+    <span
+      className={clsx('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold', pulse && 'animate-pulse')}
+      style={{ background: `${hex}22`, color: hex, border: `1px solid ${hex}44` }}
+    >
+      <span className="relative flex h-2 w-2">
+        {live && <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" style={{ background: hex }} />}
+        <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: hex }} />
+      </span>
+      {children}
+    </span>
+  )
+}
+
+// ── Transcript ───────────────────────────────────────────────────────────────
+function Transcript({ call }: { call: CallState }) {
+  return (
+    <div className="panel p-5">
+      <div className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-ink-500">
+        <Phone size={14} /> Live transcript
+      </div>
       <div className="space-y-3">
         <AnimatePresence initial>
           {call.lines.map((line, i) => {
@@ -161,8 +174,8 @@ function Transcript({ call }: { call: CallState }) {
                   className={clsx(
                     'max-w-[78%] rounded-2xl border px-3.5 py-2.5',
                     foreman
-                      ? 'rounded-tl-sm border-brand-400/20 bg-brand-500/15'
-                      : 'rounded-tr-sm border-ink-900/[0.07] bg-ink-900/[0.05]',
+                      ? 'rounded-tl-sm border-brand-400/20 bg-brand-500/[0.07]'
+                      : 'rounded-tr-sm border-ink-900/[0.07] bg-ink-900/[0.04]',
                   )}
                 >
                   <div
@@ -184,16 +197,18 @@ function Transcript({ call }: { call: CallState }) {
   )
 }
 
-// ── Captured decision card ───────────────────────────────────────────────────
+// ── Decision ─────────────────────────────────────────────────────────────────
+function DecisionPending() {
+  return (
+    <div className="panel flex h-full min-h-[160px] items-center justify-center p-5">
+      <Empty icon={<ShieldCheck size={20} />} text="Awaiting the decision on the line…" />
+    </div>
+  )
+}
+
 function DecisionCard({ call }: { call: CallState }) {
   const d = call.decision
-  if (!d)
-    return (
-      <div className="panel flex h-full min-h-[180px] items-center justify-center p-5">
-        <Empty icon={<ShieldCheck size={20} />} text="Awaiting the decision on the line…" />
-      </div>
-    )
-
+  if (!d) return null
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -205,12 +220,8 @@ function DecisionCard({ call }: { call: CallState }) {
           <CheckCircle2 size={22} />
         </div>
         <div>
-          <div className="font-display text-lg font-bold tracking-tightest text-ink-900">
-            Authorised by voice
-          </div>
-          <div className="mt-0.5 font-mono text-[11px] text-ink-500">
-            {d.by} · {d.at}
-          </div>
+          <div className="font-display text-lg font-bold tracking-tightest text-ink-900">Authorised by voice</div>
+          <div className="mt-0.5 font-mono text-[11px] text-ink-500">{d.by} · {d.at}</div>
         </div>
       </div>
 
@@ -226,57 +237,6 @@ function DecisionCard({ call }: { call: CallState }) {
               {a}
             </span>
           ))}
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-// ── Elegant "no call needed" info panel ──────────────────────────────────────
-function NoCallPanel({ c }: { c: CaseView }) {
-  const risk = c.risk_score
-  const scored = risk != null
-  const pending = scored && risk >= 0.7 // high risk, call about to start
-  const tone = pending ? '#c77b08' : '#1aa251'
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border p-6"
-      style={{ borderColor: `${tone}40`, background: `${tone}0d` }}
-    >
-      <div className="flex items-start gap-4">
-        <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
-          style={{ background: `${tone}26`, color: tone }}
-        >
-          {pending ? <Phone size={24} /> : <CheckCircle2 size={24} />}
-        </div>
-        <div>
-          <h3 className="font-display text-xl font-bold tracking-tightest text-ink-900">
-            {pending ? 'Escalation pending' : 'No call needed'}
-          </h3>
-          <p className="mt-1.5 max-w-lg text-[13px] leading-relaxed text-ink-700">
-            {pending ? (
-              <>
-                Risk <span className="font-mono font-semibold" style={{ color: tone }}>{risk}</span> is
-                above 0.70 — FOREMAN is preparing the escalation call.
-              </>
-            ) : scored ? (
-              <>
-                Risk <span className="font-mono font-semibold text-ok">{risk}</span> is below the 0.70
-                threshold — FOREMAN auto-resolved the routine fix and logged it.
-              </>
-            ) : (
-              <>No escalation yet — the call only happens when risk crosses 0.70.</>
-            )}
-          </p>
-          {scored && !pending && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <Chip className="text-ok">below 0.70 threshold</Chip>
-              <Chip className="text-ink-500">auto-resolved</Chip>
-            </div>
-          )}
         </div>
       </div>
     </motion.div>

@@ -2,6 +2,7 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { Dashboard } from './app/Dashboard'
 import { ConsoleTab } from './app/tabs/ConsoleTab'
+import { MediaBoardTab } from './app/tabs/MediaBoardTab'
 import { CrewTab } from './app/tabs/CrewTab'
 import { CasesTab } from './app/tabs/CasesTab'
 import { CallsTab } from './app/tabs/CallsTab'
@@ -18,6 +19,7 @@ export function App() {
           <Route index element={<Navigate to="console" replace />} />
           <Route path="cases" element={<CasesTab />} />
           <Route path="console" element={<ConsoleTab />} />
+          <Route path="media" element={<MediaBoardTab />} />
           <Route path="crew" element={<CrewTab />} />
           <Route path="calls" element={<CallsTab />} />
           <Route path="skills" element={<SkillsTab />} />

@@ -6,6 +6,10 @@
 # UiPath auth tokens written by `uipath auth`
 **/.uipath/
 **/.local/
+# Zip archives may BUNDLE .env secrets (e.g. knowledge-Agent.zip ships a .env) — never commit
+*.zip
+# UiPath agent runtime state DB (build artifact)
+**/__uipath/
 
 # ── Python ──────────────────────────────────────────────────────────
 .venv/

@@ -28,7 +28,7 @@ export function ReplayControls() {
     <div className="flex flex-wrap items-center gap-3">
       {/* Scenario switch */}
       <div className="flex items-center rounded-full border border-ink-900/[0.08] bg-white p-1 shadow-card-soft">
-        {(['A', 'B'] as const).map((id) => (
+        {(['C', 'A', 'B'] as const).map((id) => (
           <button
             key={id}
             onClick={() => loadScenario(id)}
@@ -39,7 +39,7 @@ export function ReplayControls() {
                 : 'text-ink-500 hover:text-ink-900',
             )}
           >
-            {id === 'A' ? 'Case A · DEL-0473' : 'Case B · MUM-0210'}
+            {id === 'C' ? 'C · MC4 solar' : id === 'A' ? 'A · RF' : 'B · cited'}
           </button>
         ))}
       </div>

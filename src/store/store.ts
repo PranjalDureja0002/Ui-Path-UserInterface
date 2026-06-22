@@ -12,7 +12,7 @@ function makeLog(entry: Omit<LogEntry, 'id'>): LogEntry {
 }
 
 interface ReplayState {
-  scenarioId: 'A' | 'B'
+  scenarioId: 'A' | 'B' | 'C'
   cursorMs: number
   playing: boolean
   speed: number
@@ -28,7 +28,7 @@ interface ForemanState {
   replay: ReplayState
 
   // actions
-  loadScenario: (id: 'A' | 'B') => void
+  loadScenario: (id: 'A' | 'B' | 'C') => void
   play: () => void
   pause: () => void
   togglePlay: () => void
@@ -81,7 +81,7 @@ function applyUpTo(
   }
 }
 
-function freshReplay(id: 'A' | 'B', overrides: Partial<ReplayState> = {}): ReplayState {
+function freshReplay(id: 'A' | 'B' | 'C', overrides: Partial<ReplayState> = {}): ReplayState {
   return { scenarioId: id, cursorMs: 0, playing: false, speed: 1, finished: false, appliedIndex: 0, ...overrides }
 }
 
@@ -90,7 +90,7 @@ export const useStore = create<ForemanState>((set, get) => ({
   order: [],
   activeCaseId: null,
   skills: {},
-  replay: freshReplay('A'),
+  replay: freshReplay('C'),
 
   loadScenario: (id) => {
     const scenario = SCENARIOS[id]
@@ -196,7 +196,7 @@ export const useStore = create<ForemanState>((set, get) => ({
 // Demo mode pre-loads Scenario A (paused) so the dashboard has a case ready.
 // Live mode starts empty and fills in as real CaseEvents arrive over WebSocket.
 if (FEED_MODE === 'demo') {
-  useStore.getState().loadScenario('A')
+  useStore.getState().loadScenario('C')
 }
 
 // ── Selectors / hooks ───────────────────────────────────────────────────────

@@ -26,8 +26,8 @@ export default {
           300: '#bdc2c9',
           200: '#dcdfe3',
         },
-        // Paper / page surfaces (clean neutral off-white)
-        page: '#eef0ee',
+        // Paper / page surfaces (clean neutral near-white — calm, editorial)
+        page: '#f6f6f4',
         paper: {
           DEFAULT: '#ffffff',
           50: '#f8f9f8',
@@ -75,6 +75,8 @@ export default {
         violet: '#7c5cdb',
       },
       fontFamily: {
+        // Editorial serif for big display headings (the elegant, professional voice)
+        serif: ['Fraunces', 'Georgia', 'Cambria', 'serif'],
         display: ['"General Sans"', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
@@ -100,10 +102,11 @@ export default {
           'radial-gradient(60% 50% at 85% 0%, rgba(120,190,255,0.10) 0%, transparent 60%), radial-gradient(50% 50% at 5% 100%, rgba(150,230,180,0.10) 0%, transparent 60%)',
       },
       boxShadow: {
-        glow: '0 1px 2px rgba(20,23,28,0.04), 0 20px 60px -22px rgba(47,109,255,0.30)',
-        'card-light': '0 1px 2px rgba(20,23,28,0.04), 0 14px 40px -24px rgba(20,23,28,0.18)',
-        'card-soft': '0 1px 0 rgba(20,23,28,0.03), 0 10px 30px -18px rgba(20,23,28,0.16)',
-        pill: '0 1px 2px rgba(20,23,28,0.05), 0 8px 22px -14px rgba(20,23,28,0.25)',
+        glow: '0 1px 2px rgba(20,23,28,0.04), 0 20px 60px -22px rgba(47,109,255,0.22)',
+        'card-light': '0 1px 2px rgba(20,23,28,0.03), 0 12px 34px -26px rgba(20,23,28,0.14)',
+        'card-soft': '0 1px 0 rgba(20,23,28,0.02), 0 8px 24px -20px rgba(20,23,28,0.12)',
+        'card-flat': '0 1px 2px rgba(20,23,28,0.03)',
+        pill: '0 1px 2px rgba(20,23,28,0.04), 0 8px 22px -16px rgba(20,23,28,0.18)',
       },
       keyframes: {
         'pulse-ring': {
@@ -128,6 +131,10 @@ export default {
           '50%': { backgroundPosition: '100% 50%' },
           '100%': { backgroundPosition: '0% 50%' },
         },
+        waveform: {
+          '0%,100%': { transform: 'scaleY(0.5)' },
+          '50%': { transform: 'scaleY(1)' },
+        },
       },
       animation: {
         'pulse-ring': 'pulse-ring 1.8s cubic-bezier(0.4,0,0.6,1) infinite',
@@ -135,6 +142,7 @@ export default {
         float: 'float 6s ease-in-out infinite',
         'float-slow': 'float-slow 9s ease-in-out infinite',
         drift: 'drift 14s ease infinite',
+        waveform: 'waveform 1.2s ease-in-out infinite',
       },
     },
   },

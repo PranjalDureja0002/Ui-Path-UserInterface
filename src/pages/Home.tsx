@@ -130,9 +130,9 @@ function Hero() {
             transition={{ duration: 0.6, delay: 0.12 }}
             className="mt-7 max-w-lg text-[16.5px] leading-relaxed text-ink-500"
           >
-            The autonomous field-operations colleague for a telecom tower operator — it perceives the
-            fault, reasons to a cause, predicts the blast-radius, calls the manager, files the real
-            tickets, and learns from every human decision.
+            The autonomous field-operations colleague for industrial fleets — solar, telecom,
+            manufacturing, HVAC and beyond. It perceives the fault, reasons to a cause, predicts the
+            blast-radius, calls the manager, files the real tickets, and learns from every human decision.
           </motion.p>
 
           <motion.div
@@ -493,7 +493,7 @@ function MatchingLearning() {
             <div className="mt-5 space-y-3">
               <div className="rounded-2xl border border-ink-900/[0.07] bg-paper-50 p-4">
                 <div className="flex items-center gap-2">
-                  <span className="chip chip-light">Case A · DEL-0473</span>
+                  <span className="chip chip-light">First case · from scratch</span>
                   <ThumbsUp size={14} className="text-ok" />
                 </div>
                 <p className="mt-2 text-[12.5px] leading-relaxed text-ink-600">
@@ -506,11 +506,11 @@ function MatchingLearning() {
               </div>
               <div className="rounded-2xl border border-ok/25 bg-ok/[0.06] p-4">
                 <div className="flex items-center gap-2">
-                  <span className="chip chip-light text-ok" style={{ borderColor: '#1aa25155' }}>Case B · MUM-0210</span>
+                  <span className="chip chip-light text-ok" style={{ borderColor: '#1aa25155' }}>Similar case · cited</span>
                   <Sparkles size={14} className="text-ok" />
                 </div>
                 <p className="mt-2 text-[12.5px] leading-relaxed text-ink-600">
-                  A similar site matches the gate → FOREMAN proposes instantly, cites DEL-0473, and on approval the
+                  A similar asset matches the gate → FOREMAN proposes instantly, cites the first case, and on approval the
                   skill is promoted to <span className="font-semibold text-ok">trusted</span>.
                 </p>
               </div>
@@ -525,10 +525,10 @@ function MatchingLearning() {
 // ── Impact stats ────────────────────────────────────────────────────────────
 function ImpactSection() {
   const stats = [
-    { n: '₹48k', l: 'SLA exposure / hr avoided', tone: '#c77b08' },
-    { n: '4 sites', l: 'flagged before they failed', tone: '#e23b3b' },
+    { n: '₹48k', l: 'exposure / hr avoided', tone: '#c77b08' },
+    { n: '6 units', l: 'flagged before they failed', tone: '#e23b3b' },
     { n: '1 fault', l: 'into a fleet-wide decision', tone: '#1d84d6' },
-    { n: '₹1.18L', l: 'warranty recovered', tone: '#1aa251' },
+    { n: '0 → 6', l: 'a flat query → the graph', tone: '#1aa251' },
   ]
   return (
     <section className="relative overflow-hidden py-24 sm:py-28">

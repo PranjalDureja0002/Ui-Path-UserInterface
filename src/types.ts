@@ -136,13 +136,24 @@ export interface Artifact {
   external?: boolean // a real external write (ServiceNow PDI)
 }
 
+// ── Media (what the field engineer sends — rendered on the MediaBoard) ───────
+export type MediaKind = 'video' | 'image' | 'audio' | 'document'
+export interface MediaItem {
+  kind: MediaKind
+  label: string
+  thumb?: string
+  duration?: string // '0:24' — audio/video
+  meta?: string // 'MP4 · 12.4 MB' | '3 pages'
+  note?: string // what it shows / a one-line caption
+}
+
 // ── Chat (WhatsApp) ─────────────────────────────────────────────────────────
 export interface ChatMessage {
   id: string
   from: 'worker' | 'foreman'
   text: string
   ts: string
-  media?: { kind: 'video' | 'audio'; label: string }[]
+  media?: MediaItem[]
   options?: string[]
 }
 
@@ -171,25 +182,77 @@ export interface CallState {
 }
 
 // ── Neo4j fleet graph ───────────────────────────────────────────────────────
+// The node/edge vocabulary is horizontal: an Asset propagates a fault through any
+// shared factor — batch, vendor, install crew, part/connector lot, site, cluster.
+export type FleetNodeType =
+  | 'site'
+  | 'batch'
+  | 'vendor'
+  | 'cluster'
+  | 'crew'
+  | 'part_lot'
+  | 'asset'
+
 export interface FleetNode {
   id: string
   label: string
-  type: 'site' | 'batch' | 'vendor' | 'cluster'
+  type: FleetNodeType
   status?: 'corroded' | 'healthy' | 'failing' | 'at_risk'
   x: number
   y: number
+  hub?: boolean // the culprit factor the blast-radius converges on
 }
 export interface FleetEdge {
   from: string
   to: string
   rel: string
+  hot?: boolean // part of the failing propagation path (animated)
+}
+
+// A shared upstream factor — used by both common-cause (count = failures it
+// explains) and criticality (count = assets that depend on it).
+export interface FleetFactor {
+  factor: string
+  factorType: string
+  via?: string
+  count: number
+  note?: string
+}
+
+// The full blast-radius payload. systemic/affected/nodes/edges are the v1 core;
+// everything below is optional enrichment so older scenarios + live payloads that
+// only send the core stay valid.
+export interface FleetView {
+  systemic: boolean
+  affected: string[]
+  nodes: FleetNode[]
+  edges: FleetEdge[]
+  unitNoun?: string // 'site' | 'string' | 'unit' — keeps copy horizontal
+  rootCause?: FleetFactor[] // common-cause: the shared root, ranked
+  criticality?: FleetFactor[] // degree centrality: biggest single-points-of-failure
+  sqlVsGraph?: { sqlFound: number; sqlNote: string; graphFound: number; graphNote: string }
+  queryTitle?: string
+  query?: string // the actual Cypher, supplied by the case (never hardcoded in the view)
+  exposurePerHr?: number
+  exposureLabel?: string
 }
 
 // ── Perception (Vision output) ──────────────────────────────────────────────
+// Horizontal: the vision/audio model emits a list of findings. `corrosion` and
+// `generator_audio` are kept optional only so the original telecom scenarios stay
+// valid — new domains (solar, IMM, HVAC…) just emit `findings`.
+export interface PerceptionFinding {
+  modality: 'image' | 'audio' | 'thermal' | 'text'
+  label: string
+  detail?: string
+  severity?: string
+  confidence?: number
+}
 export interface Perception {
-  corrosion: { present: boolean; severity: string }
-  generator_audio: { anomaly: string; confidence: number }
+  findings?: PerceptionFinding[]
   issues: string[]
+  corrosion?: { present: boolean; severity: string }
+  generator_audio?: { anomaly: string; confidence: number }
 }
 
 export interface Investigation {
@@ -226,9 +289,9 @@ export interface CaseView {
   reachedStages: StageId[]
   risk_score: number | null
   opened_at: string
-  scenario: 'A' | 'B'
+  scenario: 'A' | 'B' | 'C'
 
-  media: { kind: 'video' | 'audio'; label: string; thumb?: string }[]
+  media: MediaItem[]
   perception?: Perception
   asset_note?: string
 
@@ -241,7 +304,7 @@ export interface CaseView {
 
   investigation?: Investigation
   artifacts: Artifact[]
-  fleet?: { systemic: boolean; affected: string[]; nodes: FleetNode[]; edges: FleetEdge[] }
+  fleet?: FleetView
 
   skillHit?: { id: string; status: SkillStatus; source: string } | null
   skillWritten?: Skill
@@ -293,7 +356,7 @@ export interface TimelineStep {
 }
 
 export interface Scenario {
-  id: 'A' | 'B'
+  id: 'A' | 'B' | 'C'
   case_id: string
   title: string
   subtitle: string

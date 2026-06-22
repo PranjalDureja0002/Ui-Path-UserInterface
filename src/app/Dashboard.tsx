@@ -2,6 +2,7 @@ import { NavLink, Outlet, Link } from 'react-router-dom'
 import {
   Activity,
   GitBranch,
+  Images,
   LayoutGrid,
   Phone,
   PhoneCall,
@@ -20,6 +21,7 @@ import { clsx } from '../lib/format'
 const TABS = [
   { to: 'cases', label: 'Cases', icon: LayoutGrid },
   { to: 'console', label: 'Console', icon: Activity },
+  { to: 'media', label: 'MediaBoard', icon: Images },
   { to: 'crew', label: 'Crew', icon: Users },
   { to: 'calls', label: 'Calls', icon: Phone },
   { to: 'skills', label: 'Skills', icon: Sparkles },

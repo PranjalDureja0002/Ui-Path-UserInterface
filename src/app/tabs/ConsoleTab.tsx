@@ -2,37 +2,42 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   AudioLines,
   Eye,
+  FileText,
+  Flame,
   Network,
   Phone,
   ScanSearch,
   Sparkles,
   TriangleAlert,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useStore } from '../../store/store'
-import { AGENTS } from '../../data/catalog'
 import { WhatsAppThread } from '../../components/WhatsAppThread'
 import { ActivityLog } from '../../components/ActivityLog'
 import { TaskCard } from '../../components/TaskCard'
 import { StageRail } from '../../components/StageRail'
 import { RiskMeter } from '../../components/RiskMeter'
 import { Badge, Chip, Empty, PanelHeader } from '../../components/ui'
-import { HUE_HEX } from '../../lib/hues'
+import { CREW_ICON } from '../../data/crewIcons'
+import { ALWAYS_ON, SPECIALISTS, invocationFor, type CrewAgent } from '../../data/crew'
 import { clsx, inrCompact, pct } from '../../lib/format'
-import type { CaseView } from '../../types'
+import type { CaseView, PerceptionFinding } from '../../types'
+
+const MODALITY_ICON = { image: ScanSearch, audio: AudioLines, thermal: Flame, text: FileText } as const
 
 export function ConsoleTab() {
   const c = useStore((s) => (s.activeCaseId ? s.cases[s.activeCaseId] : null))
   if (!c) return <Empty text="No active case — press play in the top bar." />
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <CaseHeader c={c} />
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left — WhatsApp + Action Center */}
-        <div className="space-y-5 lg:col-span-4">
-          <div className="panel h-[440px]">
-            <WhatsAppThread messages={c.chat} />
+        <div className="space-y-6 lg:col-span-4">
+          <div className="panel h-[460px] overflow-hidden">
+            <WhatsAppThread messages={c.chat} name={c.worker_name} phone={c.worker_phone} />
           </div>
           {c.tasks.length > 0 && (
             <div className="space-y-3">
@@ -44,7 +49,7 @@ export function ConsoleTab() {
         </div>
 
         {/* Center — findings */}
-        <div className="space-y-5 lg:col-span-5">
+        <div className="space-y-6 lg:col-span-5">
           <SkillBanner c={c} />
           <PerceptionCard c={c} />
           <CrewStrip c={c} />
@@ -77,14 +82,20 @@ function CaseHeader({ c }: { c: CaseView }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Chip className="!text-[10px]">{c.scenario === 'A' ? 'Case A · from scratch' : 'Case B · cited'}</Chip>
+            <Chip className="!text-[10px]">
+              {c.scenario === 'A'
+                ? 'Case A · from scratch'
+                : c.scenario === 'B'
+                  ? 'Case B · cited'
+                  : 'Case C · MC4 cross-mating'}
+            </Chip>
             {c.skillHit && (
               <Badge tone="ok">
                 <Sparkles size={11} /> skill hit · {c.skillHit.source}
               </Badge>
             )}
           </div>
-          <h2 className="mt-2 font-display text-[26px] font-semibold leading-[1.1] tracking-[-0.02em] text-ink-900">
+          <h2 className="mt-3 font-serif text-[26px] font-normal leading-[1.12] tracking-[-0.012em] text-ink-900 sm:text-[30px]">
             {c.title}
           </h2>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-ink-500">
@@ -166,74 +177,117 @@ function SkillBanner({ c }: { c: CaseView }) {
 function PerceptionCard({ c }: { c: CaseView }) {
   if (!c.perception) return null
   const p = c.perception
+  // Prefer the horizontal findings list; fall back to the legacy telecom fields.
+  const findings: PerceptionFinding[] =
+    p.findings ?? [
+      ...(p.corrosion
+        ? [{
+            modality: 'image' as const,
+            label: 'Corrosion',
+            detail: p.corrosion.present ? `present · ${p.corrosion.severity}` : 'none',
+            severity: p.corrosion.present ? p.corrosion.severity : undefined,
+          }]
+        : []),
+      ...(p.generator_audio
+        ? [{
+            modality: 'audio' as const,
+            label: 'Generator audio',
+            detail:
+              p.generator_audio.anomaly === 'none'
+                ? 'normal'
+                : `${p.generator_audio.anomaly} · ${pct(p.generator_audio.confidence)}`,
+          }]
+        : []),
+    ]
   return (
     <div className="panel p-4">
-      <PanelHeader title="Perception · Vision (Gemini)" icon={<Eye size={15} />} className="!px-0 !py-0 pb-3" />
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-ink-900/[0.07] bg-ink-900/[0.02] p-3">
-          <div className="flex items-center gap-2 text-[11px] text-ink-500">
-            <ScanSearch size={13} /> Corrosion
-          </div>
-          <div className="mt-1 text-sm font-semibold text-ink-900">
-            {p.corrosion.present ? `Present · ${p.corrosion.severity}` : 'None'}
-          </div>
-        </div>
-        <div className="rounded-xl border border-ink-900/[0.07] bg-ink-900/[0.02] p-3">
-          <div className="flex items-center gap-2 text-[11px] text-ink-500">
-            <AudioLines size={13} /> Generator audio
-          </div>
-          <div className="mt-1 text-sm font-semibold text-ink-900">
-            {p.generator_audio.anomaly === 'none'
-              ? 'Normal'
-              : `${p.generator_audio.anomaly} · ${pct(p.generator_audio.confidence)}`}
-          </div>
-        </div>
+      <PanelHeader title="Perception · Vision" icon={<Eye size={15} />} className="!px-0 !py-0 pb-3" />
+      <div className={clsx('grid gap-3', findings.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}>
+        {findings.map((f, i) => {
+          const Icon = MODALITY_ICON[f.modality] ?? ScanSearch
+          const hot = f.severity === 'high' || f.severity === 'critical'
+          return (
+            <div
+              key={i}
+              className="rounded-xl border border-ink-900/[0.07] bg-ink-900/[0.02] p-3"
+              style={hot ? { borderColor: '#e23b3b40', background: '#e23b3b0a' } : undefined}
+            >
+              <div className="flex items-center gap-2 text-[11px] text-ink-500">
+                <Icon size={13} /> {f.label}
+              </div>
+              <div className="mt-1 text-sm font-semibold" style={{ color: hot ? '#e23b3b' : '#14171c' }}>
+                {f.detail ?? (f.confidence != null ? pct(f.confidence) : '—')}
+              </div>
+            </div>
+          )
+        })}
       </div>
-      {c.asset_note && (
+      {(c.asset_note || p.issues.length > 0) && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {p.issues.map((i) => (
             <Chip key={i}>{i}</Chip>
           ))}
-          <Chip className="text-ink-400">{c.asset_note}</Chip>
+          {c.asset_note && <Chip className="text-ink-400">{c.asset_note}</Chip>}
         </div>
       )}
     </div>
   )
 }
 
+type CrewStatus = 'queued' | 'running' | 'done'
+
 function CrewStrip({ c }: { c: CaseView }) {
-  if (!c.crewAssembled) return null
+  if (!c.crewAssembled && !c.reachedStages.includes('perceive')) return null
+  const { invoked, skipped } = invocationFor(c.scenario)
+  const byId = Object.fromEntries(SPECIALISTS.map((s) => [s.id, s]))
+  const past = (['escalate', 'resolve', 'close'] as const).some((s) => c.reachedStages.includes(s))
+  const atInvestigate = c.reachedStages.includes('investigate')
+  const specStatus: CrewStatus = past ? 'done' : atInvestigate ? 'running' : 'queued'
+  const brainStatus: CrewStatus = atInvestigate ? 'done' : 'running'
+
   return (
     <div className="panel p-4">
-      <PanelHeader title="Crew" icon={<Network size={15} />} className="!px-0 !py-0 pb-3" />
-      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-6">
-        {AGENTS.map((def) => {
-          const run = c.agents[def.id]
-          const hex = HUE_HEX[def.hue]
-          const on = run.status !== 'idle'
-          const running = run.status === 'running'
-          return (
-            <div
-              key={def.id}
-              className={clsx(
-                'flex flex-col items-center gap-1.5 rounded-xl border p-2.5 text-center transition-all',
-                on ? 'border-ink-900/10 bg-ink-900/[0.03]' : 'border-ink-900/[0.06] opacity-40',
-              )}
-              style={running ? { boxShadow: `0 0 0 1px ${hex}66, 0 0 20px -6px ${hex}` } : undefined}
-            >
-              <span
-                className={clsx('h-2 w-2 rounded-full', running && 'animate-pulse')}
-                style={{ background: on ? hex : '#cbd0d6', boxShadow: on ? `0 0 8px ${hex}` : undefined }}
-              />
-              <span className="text-[10.5px] font-semibold leading-tight text-ink-700">{def.name}</span>
-              <span className="text-[8.5px] uppercase tracking-wide text-ink-400">
-                {run.status === 'done' ? '✓' : run.status === 'running' ? '···' : run.status === 'idle' ? '—' : '•'}
-              </span>
-            </div>
-          )
+      <div className="mb-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[13px] font-semibold text-ink-900">
+          <Network size={14} className="text-ink-400" />
+          Crew · assembled for this case
+        </div>
+        <Link to="/app/crew" className="text-[11px] font-medium text-ink-400 transition-colors hover:text-ink-700">
+          all {SPECIALISTS.length} →
+        </Link>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <CrewChip agent={ALWAYS_ON} status={brainStatus} brain />
+        {invoked.map((inv) => {
+          const a = byId[inv.id]
+          return a ? <CrewChip key={inv.id} agent={a} status={specStatus} /> : null
         })}
+        {skipped.length > 0 && (
+          <span className="rounded-full border border-ink-900/[0.07] bg-paper-50 px-2.5 py-1 text-[10.5px] text-ink-400">
+            +{skipped.length} held back
+          </span>
+        )}
       </div>
     </div>
+  )
+}
+
+function CrewChip({ agent, status, brain }: { agent: CrewAgent; status: CrewStatus; brain?: boolean }) {
+  const Icon = CREW_ICON[agent.id] ?? Network
+  const accent = agent.safety ? '#c77b08' : '#2f6dff'
+  const dot = status === 'done' ? '#1aa251' : status === 'running' ? accent : '#cbd0d6'
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium text-ink-700"
+      style={{ borderColor: `${accent}${brain ? '4d' : '2b'}`, background: brain ? `${accent}14` : `${accent}08` }}
+    >
+      <Icon size={13} style={{ color: accent }} />
+      {agent.short}
+      <span
+        className={clsx('h-1.5 w-1.5 rounded-full', status === 'running' && 'animate-pulse')}
+        style={{ background: dot, boxShadow: status !== 'queued' ? `0 0 6px ${dot}` : undefined }}
+      />
+    </span>
   )
 }
 
@@ -248,7 +302,11 @@ function InvestigationCard({ c }: { c: CaseView }) {
         <div className="mt-0.5 text-[14px] font-semibold text-ink-900">{inv.root_cause}</div>
         <div className="mt-3 flex flex-wrap gap-1.5">
           <Badge tone="ok">confidence {pct(inv.confidence)}</Badge>
-          {inv.systemic && <Badge tone="danger">systemic · {inv.fleet_affected} sites</Badge>}
+          {inv.systemic && (
+            <Badge tone="danger">
+              systemic · {inv.fleet_affected} {c.fleet?.unitNoun ?? 'site'}s
+            </Badge>
+          )}
           {inv.alternatives_ruled_out.map((a) => (
             <Chip key={a}>ruled out · {a}</Chip>
           ))}

@@ -26,11 +26,11 @@ from foreman_events import configure, emit, log
 
 # ── Agent I/O contract (the Maestro Case passes Input, consumes Output) ───────
 class Input(BaseModel):
-    case_id: str = Field(description="Maestro case id, e.g. CASE-0916")
-    asset_id: str = Field(description="The failing asset, e.g. AST-RF-DEL-0473")
-    site_id: str = Field(default="", description="Tower site id, e.g. DEL-0473")
+    case_id: str = Field(description="Maestro case id, e.g. CASE-PV-0758")
+    asset_id: str = Field(description="The failing asset, e.g. AST-PV-RJ-S12")
+    site_id: str = Field(default="", description="Site id, e.g. RJ-SOLAR-1")
     mode: str = Field(default="investigate", description="'investigate' (read) or 'close' (learn)")
-    failure_mode: str = Field(default="connector_corrosion", description="Confirmed failure (close mode)")
+    failure_mode: str = Field(default="connector_burn", description="Confirmed failure, e.g. mc4_connector_burn (drives common-cause + close)")
     confidence: float = Field(default=0.9, description="Confidence of the confirmed failure (close mode)")
     backend_url: str = Field(default="", description="Public URL of the view-backend (cloud); empty = localhost")
 
@@ -40,7 +40,7 @@ class State(BaseModel):
     asset_id: str = ""
     site_id: str = ""
     mode: str = "investigate"
-    failure_mode: str = "connector_corrosion"
+    failure_mode: str = "connector_burn"
     confidence: float = 0.9
     backend_url: str = ""
     fleet: dict[str, Any] = {}
@@ -79,7 +79,17 @@ async def blast(state: State) -> dict[str, Any]:
 
     payload = kg.to_fleet_payload(rows, state.asset_id)
 
-    # What has the graph already LEARNED about this batch? (this is the "next case is
+    # Prefer the enriched multi-factor payload (crew/lot nodes, common-cause,
+    # criticality, SQL-vs-graph) when the graph supports it; else keep v1.
+    try:
+        rich = kg.fleet_payload_v2(state.asset_id, state.failure_mode)
+    except Exception as e:  # noqa: BLE001
+        rich = {}
+        log(cid, "investigate", "Fleet - Neo4j", f"Enriched payload skipped: {e}", "warn")
+    if rich:
+        payload = rich
+
+    # What has the graph already LEARNED about this batch? (the "next case is
     # smarter" signal — confirmed prior failures + whether it's a known pattern)
     try:
         intel = kg.batch_intel(state.asset_id)
@@ -87,6 +97,8 @@ async def blast(state: State) -> dict[str, Any]:
         intel = {"confirmed_failures": 0, "known_pattern": False, "failure_modes": []}
     payload["prior_failures"] = intel["confirmed_failures"]
     payload["known_pattern"] = intel["known_pattern"]
+    batch = rows[0]["batch_id"] if rows else ""
+    payload["batch_id"] = batch
     emit(cid, {"kind": "fleet.ready", "fleet": payload})
 
     if intel["confirmed_failures"] > 0:
@@ -96,17 +108,25 @@ async def blast(state: State) -> dict[str, Any]:
             f"{modes}" + (" - recognised failure pattern." if intel["known_pattern"] else "."),
             "warn" if intel["known_pattern"] else "agent")
 
-    batch = rows[0]["batch_id"] if rows else ""
-    pat = " (known failure pattern)" if intel["known_pattern"] else ""
-    headline = (f"Systemic - {len(payload['affected'])} sites on {batch}{pat}"
-                if payload["systemic"] else "Isolated - no fleet pattern")
+    unit = payload.get("unitNoun", "site")
+    n_aff = len(payload.get("affected", []))
+    if payload.get("rootCause"):
+        root = payload["rootCause"][0]
+        headline = (f"Systemic - {n_aff} {unit}s via {root['factor']}"
+                    if payload.get("systemic") else "Isolated - no shared factor")
+        detail = (f"Common cause: {root['factorType']} {root['factor']} - a same-batch query misses it"
+                  if payload.get("systemic") else "No shared failing factor")
+        cites = ["neo4j:multi-factor", "neo4j:common-cause"]
+    else:
+        pat = " (known failure pattern)" if intel["known_pattern"] else ""
+        headline = (f"Systemic - {n_aff} sites on {batch}{pat}"
+                    if payload.get("systemic") else "Isolated - no fleet pattern")
+        detail = ("Shares the failing batch in the same environment"
+                  if payload.get("systemic") else "No shared failing batch")
+        cites = ["neo4j:blast-radius", "neo4j:batch-intel"]
     emit(cid, {"kind": "agent.completed", "agent": "fleet", "run": {
-        "headline": headline,
-        "detail": ("Shares the failing batch in the same environment"
-                   if payload["systemic"] else "No shared failing batch"),
-        "confidence": 0.92, "citations": ["neo4j:blast-radius", "neo4j:batch-intel"]}})
+        "headline": headline, "detail": detail, "confidence": 0.92, "citations": cites}})
 
-    payload["batch_id"] = batch
     return {"fleet": payload}
 
 
