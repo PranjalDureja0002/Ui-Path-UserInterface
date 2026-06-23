@@ -2,7 +2,7 @@ import { FastForward, Pause, Play, RotateCcw, SkipForward } from 'lucide-react'
 import { useStore } from '../store/store'
 import { SCENARIOS } from '../data/scenarios'
 import { STAGES } from '../types'
-import { clsx } from '../lib/format'
+import { Segmented } from './ui'
 
 const SPEEDS = [1, 2, 4]
 
@@ -27,22 +27,15 @@ export function ReplayControls() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Scenario switch */}
-      <div className="flex items-center rounded-full border border-ink-900/[0.08] bg-white p-1 shadow-card-soft">
-        {(['C', 'A', 'B'] as const).map((id) => (
-          <button
-            key={id}
-            onClick={() => loadScenario(id)}
-            className={clsx(
-              'rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors',
-              replay.scenarioId === id
-                ? 'bg-brand-500 text-white shadow-glow'
-                : 'text-ink-500 hover:text-ink-900',
-            )}
-          >
-            {id === 'C' ? 'C · MC4 solar' : id === 'A' ? 'A · RF' : 'B · cited'}
-          </button>
-        ))}
-      </div>
+      <Segmented
+        value={replay.scenarioId}
+        onChange={loadScenario}
+        options={[
+          { value: 'C', label: 'C · MC4 solar' },
+          { value: 'A', label: 'A · RF' },
+          { value: 'B', label: 'B · cited' },
+        ]}
+      />
 
       {/* Transport */}
       <div className="flex items-center gap-1 rounded-full border border-ink-900/[0.08] bg-white p-1 shadow-card-soft">

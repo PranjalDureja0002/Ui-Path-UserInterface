@@ -1,0 +1,190 @@
+{
+    "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+    "$id": "entry-points.json",
+    "entryPoints": [
+        {
+            "filePath": "agent",
+            "uniqueId": "de7bea83-4db1-4be0-a36f-18a7bd483cea",
+            "type": "agent",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "to_number": {
+                        "description": "Number to call, E.164, e.g. +919805022411 (verified on trial)",
+                        "title": "To Number",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "What FOREMAN says first \u2014 the escalation summary.",
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "recommendation": {
+                        "default": "",
+                        "description": "The fix FOREMAN proposes; spoken as the recommendation.",
+                        "title": "Recommendation",
+                        "type": "string"
+                    },
+                    "to_role": {
+                        "default": "the manager",
+                        "description": "Who is being called, e.g. 'Site EPC manager'.",
+                        "title": "To Role",
+                        "type": "string"
+                    },
+                    "site_id": {
+                        "default": "",
+                        "description": "Site id for the UI case, e.g. RJ-SOLAR-1.",
+                        "title": "Site Id",
+                        "type": "string"
+                    },
+                    "title": {
+                        "default": "Voice escalation",
+                        "description": "Case title shown in the UI Calls tab.",
+                        "title": "Title",
+                        "type": "string"
+                    },
+                    "from_number": {
+                        "default": "",
+                        "description": "Twilio VOICE number to call FROM (overrides env/Asset).",
+                        "title": "From Number",
+                        "type": "string"
+                    },
+                    "webhook_url": {
+                        "default": "",
+                        "description": "Public voice webhook (two-way). Else env VOICE_WEBHOOK_URL / Asset Voice-Webhook-Url. Empty = one-way.",
+                        "title": "Webhook Url",
+                        "type": "string"
+                    },
+                    "wait_for_decision": {
+                        "default": true,
+                        "description": "Two-way: block until the manager decides (or timeout).",
+                        "title": "Wait For Decision",
+                        "type": "boolean"
+                    },
+                    "timeout_sec": {
+                        "default": 75,
+                        "description": "Two-way: how long to wait for the decision.",
+                        "title": "Timeout Sec",
+                        "type": "integer"
+                    },
+                    "voice": {
+                        "default": "alice",
+                        "description": "Twilio TTS voice (one-way only; webhook has its own).",
+                        "title": "Voice",
+                        "type": "string"
+                    },
+                    "language": {
+                        "default": "en-IN",
+                        "description": "Speech language, e.g. en-IN / en-US.",
+                        "title": "Language",
+                        "type": "string"
+                    },
+                    "case_id": {
+                        "default": "",
+                        "description": "Case id, for logging, e.g. CASE-PV-0758.",
+                        "title": "Case Id",
+                        "type": "string"
+                    },
+                    "dry_run": {
+                        "default": false,
+                        "description": "Build everything but place NO real call.",
+                        "title": "Dry Run",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "to_number",
+                    "message"
+                ]
+            },
+            "output": {
+                "type": "object",
+                "properties": {
+                    "placed": {
+                        "default": false,
+                        "title": "Placed",
+                        "type": "boolean"
+                    },
+                    "two_way": {
+                        "default": false,
+                        "title": "Two Way",
+                        "type": "boolean"
+                    },
+                    "call_sid": {
+                        "default": "",
+                        "title": "Call Sid",
+                        "type": "string"
+                    },
+                    "status": {
+                        "default": "",
+                        "title": "Status",
+                        "type": "string"
+                    },
+                    "decision": {
+                        "default": "",
+                        "title": "Decision",
+                        "type": "string"
+                    },
+                    "to": {
+                        "default": "",
+                        "title": "To",
+                        "type": "string"
+                    },
+                    "from_": {
+                        "default": "",
+                        "title": "From",
+                        "type": "string"
+                    },
+                    "twiml": {
+                        "default": "",
+                        "title": "Twiml",
+                        "type": "string"
+                    },
+                    "error": {
+                        "default": "",
+                        "title": "Error",
+                        "type": "string"
+                    }
+                },
+                "required": []
+            },
+            "graph": {
+                "nodes": [
+                    {
+                        "id": "__start__",
+                        "name": "__start__",
+                        "type": "__start__",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "place_call",
+                        "name": "place_call",
+                        "type": "node",
+                        "subgraph": null,
+                        "metadata": {}
+                    },
+                    {
+                        "id": "__end__",
+                        "name": "__end__",
+                        "type": "__end__",
+                        "subgraph": null,
+                        "metadata": {}
+                    }
+                ],
+                "edges": [
+                    {
+                        "source": "__start__",
+                        "target": "place_call",
+                        "label": null
+                    },
+                    {
+                        "source": "place_call",
+                        "target": "__end__",
+                        "label": null
+                    }
+                ]
+            }
+        }
+    ]
+}

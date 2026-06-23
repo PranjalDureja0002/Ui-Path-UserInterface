@@ -213,3 +213,79 @@ export function Empty({ icon, text }: { icon?: ReactNode; text: string }) {
     </div>
   )
 }
+
+// ── Segmented control (ElevenLabs-style: solid-ink active, quiet inactive) ────
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+  size = 'md',
+  className,
+}: {
+  options: { value: T; label: ReactNode }[]
+  value: T
+  onChange: (v: T) => void
+  size?: 'sm' | 'md'
+  className?: string
+}) {
+  return (
+    <div
+      className={clsx(
+        'inline-flex items-center gap-0.5 rounded-full border border-ink-900/[0.08] bg-paper-100/80 p-0.5',
+        className,
+      )}
+    >
+      {options.map((o) => {
+        const active = o.value === value
+        return (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => onChange(o.value)}
+            className={clsx(
+              'rounded-full font-semibold tracking-tight transition-all duration-150',
+              size === 'sm' ? 'px-2.5 py-1 text-[11px]' : 'px-3.5 py-1.5 text-[12px]',
+              active
+                ? 'bg-ink-900 text-white shadow-[0_1px_2px_rgba(20,23,28,0.25)]'
+                : 'text-ink-500 hover:bg-ink-900/[0.05] hover:text-ink-900',
+            )}
+          >
+            {o.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Pill button (ElevenLabs outline pill — for standalone actions) ───────────
+export function PillButton({
+  children,
+  onClick,
+  icon,
+  active,
+  className,
+}: {
+  children: ReactNode
+  onClick?: () => void
+  icon?: ReactNode
+  active?: boolean
+  className?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={clsx(
+        'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold tracking-tight transition-all duration-150',
+        active
+          ? 'bg-ink-900 text-white shadow-[0_1px_2px_rgba(20,23,28,0.25)] hover:bg-ink-800'
+          : 'border border-ink-900/[0.12] bg-white text-ink-700 hover:border-ink-900/25 hover:text-ink-900',
+        className,
+      )}
+    >
+      {icon && <span className="-ml-0.5 opacity-80">{icon}</span>}
+      {children}
+    </button>
+  )
+}

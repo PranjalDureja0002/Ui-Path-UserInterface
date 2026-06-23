@@ -1,0 +1,10 @@
+{
+  "SolutionId": "43981408-fab7-43f6-b8f2-adf7fe90bb38",
+  "Projects": [
+    {
+      "Id": "557cfbfe-1c9c-49b0-89cb-3c0500824f1b",
+      "Type": "Agent",
+      "ProjectRelativePath": "Agent/project.uiproj"
+    }
+  ]
+}

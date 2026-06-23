@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight, Fingerprint, Quote, Sparkles } from 'lucide-react'
 import { useStore } from '../../store/store'
 import { Badge, Chip, Empty, TabHeader } from '../../components/ui'
+import { SkillFileModal, skillFileExists } from '../../components/SkillFileModal'
 import { clsx } from '../../lib/format'
 import type { Tone } from '../../lib/hues'
 import { SKILL_LIBRARY, type LibrarySkill } from '../../data/skillLibrary'
@@ -19,6 +20,7 @@ export function SkillsTab() {
   const skills = useStore((s) => s.skills)
   const list = Object.values(skills)
   const hasTrusted = list.some((s) => s.status === 'trusted')
+  const [openId, setOpenId] = useState<string | null>(null)
 
   return (
     <div className="space-y-9">
@@ -51,15 +53,17 @@ export function SkillsTab() {
           <SectionLabel>Learned this session</SectionLabel>
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
             {list.map((skill, i) => (
-              <SkillCard key={skill.id} skill={skill} index={i} />
+              <SkillCard key={skill.id} skill={skill} index={i} onView={setOpenId} />
             ))}
           </div>
         </div>
       )}
 
-      <FleetLibrary learnedIds={new Set(list.map((s) => s.id))} />
+      <FleetLibrary learnedIds={new Set(list.map((s) => s.id))} onView={setOpenId} />
 
       <SmartMatching />
+
+      <SkillFileModal id={openId} onClose={() => setOpenId(null)} />
     </div>
   )
 }
@@ -101,7 +105,7 @@ function LifecycleStrip({ hasTrusted }: { hasTrusted: boolean }) {
 }
 
 // ── Skill card (live learned) — calm, editorial ─────────────────────────────
-function SkillCard({ skill, index }: { skill: Skill; index: number }) {
+function SkillCard({ skill, index, onView }: { skill: Skill; index: number; onView: (id: string) => void }) {
   const tone = STATUS_TONE[skill.status]
   const hard: [string, string][] = (
     [
@@ -211,6 +215,17 @@ function SkillCard({ skill, index }: { skill: Skill; index: number }) {
           )}
         </div>
       )}
+
+      {skillFileExists(skill.id) && (
+        <button
+          onClick={() => onView(skill.id)}
+          className="group mt-4 flex w-full items-center gap-1.5 border-t border-ink-900/[0.06] pt-3 text-[11px] text-ink-400"
+        >
+          <span className="font-medium text-ink-600 transition-colors group-hover:text-brand-600">View skill file</span>
+          <ArrowUpRight size={12} className="text-ink-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <span className="ml-auto font-mono text-[10.5px]">skills/{skill.id}.md</span>
+        </button>
+      )}
     </motion.div>
   )
 }
@@ -222,7 +237,7 @@ const LIB_STATUS_TONE: Record<LibrarySkill['status'], Tone> = {
   retired: 'muted',
 }
 
-function FleetLibrary({ learnedIds }: { learnedIds: Set<string> }) {
+function FleetLibrary({ learnedIds, onView }: { learnedIds: Set<string>; onView: (id: string) => void }) {
   const items = SKILL_LIBRARY.filter((s) => !learnedIds.has(s.id))
   const domains = Array.from(new Set(SKILL_LIBRARY.map((s) => s.domain)))
   if (items.length === 0) return null
@@ -240,12 +255,14 @@ function FleetLibrary({ learnedIds }: { learnedIds: Set<string> }) {
       </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((s, i) => (
-          <motion.div
+          <motion.button
             key={s.id}
+            type="button"
+            onClick={() => onView(s.id)}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.03 }}
-            className="group flex flex-col rounded-2xl border border-ink-900/[0.07] bg-white p-5 shadow-card-flat transition-colors hover:border-ink-900/[0.14]"
+            className="group flex flex-col rounded-2xl border border-ink-900/[0.07] bg-white p-5 text-left shadow-card-flat transition-all hover:-translate-y-0.5 hover:border-ink-900/[0.14] hover:shadow-card-light"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="rounded-full border border-ink-900/[0.10] bg-paper-50 px-2.5 py-0.5 text-[10px] font-medium text-ink-500">
@@ -266,11 +283,11 @@ function FleetLibrary({ learnedIds }: { learnedIds: Set<string> }) {
             </div>
             <div className="mt-2.5 flex-1 text-[12.5px] leading-relaxed text-ink-500">{s.diagnosis}</div>
             <div className="mt-4 flex items-center gap-1.5 border-t border-ink-900/[0.06] pt-3 text-[11px] text-ink-400">
-              <span className="font-medium text-ink-600">View skill file</span>
+              <span className="font-medium text-ink-600 transition-colors group-hover:text-brand-600">View skill file</span>
               <ArrowUpRight size={12} className="text-ink-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              <span className="ml-auto font-mono text-[10.5px]">skills/{s.id}/SKILL.md</span>
+              <span className="ml-auto font-mono text-[10.5px]">skills/{s.id}.md</span>
             </div>
-          </motion.div>
+          </motion.button>
         ))}
       </div>
     </div>

@@ -62,7 +62,7 @@ export function CasesTab() {
               <button
                 key={id}
                 onClick={() => openScenario(id)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-ink-900/[0.08] bg-ink-900/[0.02] px-3 py-1.5 text-[11.5px] font-medium text-ink-700 transition-colors hover:border-brand-400/40 hover:bg-brand-500/[0.08] hover:text-ink-900"
+                className="inline-flex items-center gap-1.5 rounded-full border border-ink-900/[0.12] bg-white px-3.5 py-1.5 text-[11.5px] font-semibold tracking-tight text-ink-700 transition-all duration-150 hover:border-ink-900/25 hover:text-ink-900"
               >
                 <Plus size={13} />
                 Open Case {id} · {SCENARIO_META[id].site}
