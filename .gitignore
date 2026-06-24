@@ -29,6 +29,10 @@ dist-ssr
 server/cf*.log
 _*.json
 
+# ── Local-only assets ───────────────────────────────────────────────
+# Raw logo/source images used only to GENERATE src/assets/logos/* at build time.
+uipath-assets/
+
 # ── OS / editor ─────────────────────────────────────────────────────
 .DS_Store
 .vscode/*

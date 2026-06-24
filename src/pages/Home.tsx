@@ -6,8 +6,8 @@ import {
   Boxes,
   Brain,
   Database,
+  Eye,
   Fingerprint,
-  FileSearch,
   MessageCircle,
   Network,
   Phone,
@@ -15,16 +15,20 @@ import {
   ShieldCheck,
   Sparkles,
   ThumbsUp,
+  Users,
   Workflow,
 } from 'lucide-react'
 import { Logo } from '../components/Logo'
-import { Chip } from '../components/ui'
+import { LogoMarquee } from '../components/LogoMarquee'
 import { STAGES } from '../types'
-import { STORES } from '../data/entities'
 import { HUE_HEX, HUE_SOFT } from '../lib/hues'
 import { clsx } from '../lib/format'
 import agenticArchitecture from '../assets/agentic-architecture.png'
 import themeBlobs from '../assets/theme-blobs.png'
+import uipathLogo from '../assets/logos/uipath.png'
+import neo4jLogo from '../assets/logos/neo4j.png'
+import geminiLogo from '../assets/logos/gemini.png'
+import twilioLogo from '../assets/logos/twilio-whatsapp.png'
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -35,7 +39,7 @@ export function Home() {
     <div className="min-h-screen bg-page text-ink-700">
       <LandingNav />
       <Hero />
-      <TechStrip />
+      <LogoMarquee />
       <ConductorSection />
       <HowItWorks />
       <StoresSection />
@@ -52,7 +56,7 @@ function LandingNav() {
   const links = [
     { id: 'idea', label: 'The idea' },
     { id: 'how', label: 'How it works' },
-    { id: 'stores', label: 'Stores' },
+    { id: 'capabilities', label: 'Capabilities' },
     { id: 'learning', label: 'Learning' },
   ]
   return (
@@ -101,7 +105,7 @@ function Hero() {
       >
         <motion.img
           src={themeBlobs}
-          alt="Multimodal WhatsApp intake — text, image, audio and video flowing into FOREMAN"
+          alt="Multimodal intake — text, image, audio and video flowing into FOREMAN"
           initial={{ scale: 1.05 }}
           animate={{ scale: 1, y: [0, -16, 0] }}
           transition={{
@@ -120,8 +124,8 @@ function Hero() {
             transition={{ duration: 0.6, delay: 0.05 }}
             className="font-display text-[clamp(2.3rem,5.2vw,4.2rem)] font-medium leading-[1.04] tracking-[-0.02em] text-ink-900"
           >
-            From a WhatsApp message to a{' '}
-            <span className="text-sheen">defensible resolution.</span>
+            Enterprise operations,{' '}
+            <span className="text-sheen">autonomously resolved.</span>
           </motion.h1>
 
           <motion.p
@@ -130,9 +134,10 @@ function Hero() {
             transition={{ duration: 0.6, delay: 0.12 }}
             className="mt-7 max-w-lg text-[16.5px] leading-relaxed text-ink-500"
           >
-            The autonomous field-operations colleague for industrial fleets — solar, telecom,
-            manufacturing, HVAC and beyond. It perceives the fault, reasons to a cause, predicts the
-            blast-radius, calls the manager, files the real tickets, and learns from every human decision.
+            The autonomous operations colleague — horizontal across every industry and asset class. It
+            perceives any problem across any modality, reasons to a cited root cause, predicts the ripple
+            across your estate, escalates to the right person, acts through governed automation, and learns
+            from every case.
           </motion.p>
 
           <motion.div
@@ -156,7 +161,7 @@ function Hero() {
             className="mt-12 flex flex-wrap gap-x-10 gap-y-4"
           >
             {[
-              ['6', 'specialist agents'],
+              ['Dynamic', 'specialist crew'],
               ['7', 'durable stages'],
               ['2', 'human gates'],
               ['100%', 'cited reasoning'],
@@ -170,25 +175,6 @@ function Hero() {
         </div>
       </div>
     </section>
-  )
-}
-
-// ── Tech strip ──────────────────────────────────────────────────────────────
-function TechStrip() {
-  const tech = ['UiPath Maestro', 'LangGraph', 'Gemini 2.5', 'Twilio Voice', 'Neo4j AuraDB', 'ServiceNow', 'Context Grounding', 'Data Fabric']
-  return (
-    <div className="border-y border-ink-900/[0.06] bg-white/60 py-5">
-      <div className="mx-auto max-w-[1200px] px-6">
-        <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-center">
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">Built on</span>
-          {tech.map((t) => (
-            <span key={t} className="font-display text-sm font-bold text-ink-600/70">
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
   )
 }
 
@@ -226,23 +212,23 @@ function ConductorSection() {
       tag: 'Agents',
       title: 'Thinking',
       desc: 'Coded LangGraph brains and low-code specialists. They perceive, diagnose, and decide — then merge into one cited recommendation.',
-      points: ['Supervisor + 5 specialists', 'Run in parallel', 'Strict-JSON outputs'],
+      points: ['Supervisor + dynamic crew', 'Multimodal perception', 'Cited recommendations'],
     },
     {
       hue: 'amber' as const,
       icon: ShieldCheck,
       tag: 'Action Center',
       title: 'Human gate',
-      desc: 'Two governed checkpoints. The case parks, a person answers in WhatsApp or Action Center, and it resumes — nothing irreversible without a yes.',
-      points: ['Confirm the diagnosis', 'Approve the call', 'Durable parking'],
+      desc: 'Two governed checkpoints. The case parks, a person answers in the channel or in Action Center, and it resumes — nothing irreversible without a yes.',
+      points: ['Confirm the diagnosis', 'Approve the action', 'Governed, durable pauses'],
     },
     {
       hue: 'mint' as const,
       icon: Workflow,
-      tag: 'BPMN processes',
+      tag: 'Governed actions',
       title: 'Deterministic actions',
-      desc: 'Idempotent writes to real systems — tickets, work orders, warranty claims — each one guarded, retried, and reversible on failure.',
-      points: ['Guarded by case data', 'Idempotency keys', 'Compensation on error'],
+      desc: 'Guarded writes to your systems of record — tickets, work orders, downstream records — each one safe, retried, and reversible on failure.',
+      points: ['Guarded by case data', 'Acts on systems of record', 'Reversible on failure'],
     },
   ]
   return (
@@ -251,7 +237,6 @@ function ConductorSection() {
         <SectionHead
           eyebrow="The one idea"
           title="A conductor, not a worker."
-          sub="The UiPath Maestro Case holds the shared case data and, at every stage, decides who to hand the work to. There are only three kinds of worker it ever calls."
         />
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
           {workers.map((w, i) => (
@@ -338,10 +323,10 @@ function HowItWorks() {
               Every worker, store, and stage — in one view.
             </h3>
             <p className="mt-4 text-[15px] leading-relaxed text-ink-500">
-              A WhatsApp message opens a case. The Maestro conductor hands each stage to an agent, a
-              human gate, or a deterministic write — while the crew reads the four stores and feeds
-              them back on close. Smart matching and the learning payoff make every next case faster,
-              and cited.
+              A signal on any channel opens a case. The UiPath Maestro Case carries the shared context and,
+              at every stage, routes the work to a reasoning agent, a human gate, or a governed action —
+              while the crew reads the knowledge layer and writes back on close. Smart matching and the
+              learning loop make every next case faster, and cited.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <span className="chip chip-light">3 workers</span>
@@ -370,33 +355,71 @@ function HowItWorks() {
   )
 }
 
-// ── Stores ──────────────────────────────────────────────────────────────────
+// ── What makes it state of the art (the SOTA capabilities) ──────────────────
 function StoresSection() {
-  const icons: Record<string, typeof Database> = {
-    data_fabric: Database,
-    context_grounding: FileSearch,
-    agent_memory: Boxes,
-    neo4j: Network,
-  }
+  const caps = [
+    {
+      icon: Network,
+      hue: 'periwinkle' as const,
+      name: 'Neo4j Knowledge Graph',
+      tag: 'intelligent knowledge layer',
+      desc: 'The connection brain — multi-factor blast-radius, common-cause and criticality. It sees the estate-wide risk a flat SQL query can’t.',
+    },
+    {
+      icon: Sparkles,
+      hue: 'mint' as const,
+      name: 'Semantic Skills (.md)',
+      tag: 'self-learning memory',
+      desc: 'Every approval distils a hard-gated, cited recipe card. The next similar case is solved in seconds — candidate → trusted.',
+    },
+    {
+      icon: Eye,
+      hue: 'sky' as const,
+      name: 'Multimodal Vision',
+      tag: 'perceive anything',
+      desc: 'Reads video, images and audio into structured findings. The frontline just captures it — no forms, no codes, no triage skill.',
+    },
+    {
+      icon: Users,
+      hue: 'lilac' as const,
+      name: 'Dynamic Crew + Supervisor',
+      tag: 'selective intelligence',
+      desc: 'A Supervisor assembles only the specialists a case needs — and can justify the ones it holds back.',
+    },
+    {
+      icon: Database,
+      hue: 'amber' as const,
+      name: 'Data Fabric + Context Grounding',
+      tag: 'governed knowledge',
+      desc: 'Structured entities and policy, plus grounded SOPs, specs and standards — every answer cited to a source.',
+    },
+    {
+      icon: Boxes,
+      hue: 'rose' as const,
+      name: 'Open & Governed',
+      tag: 'MCP · HITL · coded + low-code',
+      desc: 'MCP-compatible, so any tool plugs in; human-in-the-loop gates and guarded, reversible actions. Authored with Claude Code.',
+    },
+  ]
   return (
-    <section id="stores" className="py-24 sm:py-28">
+    <section id="capabilities" className="py-24 sm:py-28">
       <div className="mx-auto max-w-[1200px] px-6">
         <SectionHead
-          eyebrow="The four stores"
-          title="What makes it smart."
-          sub="When an agent thinks, it reads from four stores. Closing a case feeds them — so the next case is smarter."
+          eyebrow="What makes it state of the art"
+          title="The intelligence others can’t copy."
+          sub="A self-learning knowledge graph, a semantic skill memory, multimodal perception and a dynamic agent crew — open by design and governed end to end."
         />
-        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {STORES.map((store, i) => {
-            const hex = HUE_HEX[store.hue]
-            const Icon = icons[store.id] ?? Database
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {caps.map((cap, i) => {
+            const hex = HUE_HEX[cap.hue]
+            const Icon = cap.icon
             return (
               <motion.div
-                key={store.id}
+                key={cap.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
+                transition={{ duration: 0.5, delay: i * 0.07 }}
                 className="group relative overflow-hidden rounded-3xl border border-ink-900/[0.07] bg-white p-6 shadow-card-soft"
               >
                 <div
@@ -410,12 +433,12 @@ function StoresSection() {
                   <Icon size={22} />
                 </div>
                 <h3 className="relative mt-4 font-display text-lg font-bold tracking-tightest text-ink-900">
-                  {store.name}
+                  {cap.name}
                 </h3>
-                <p className="relative mt-2 text-[13px] leading-relaxed text-ink-500">{store.holds}</p>
+                <p className="relative mt-2 text-[13px] leading-relaxed text-ink-500">{cap.desc}</p>
                 <div className="relative mt-4">
                   <span className="chip chip-light" style={{ color: shade(hex) }}>
-                    {store.agentsDo}
+                    {cap.tag}
                   </span>
                 </div>
               </motion.div>
@@ -446,7 +469,7 @@ function MatchingLearning() {
         <SectionHead
           eyebrow="Careful enough for the real world"
           title="It adapts — it never blindly copies."
-          sub="An auxiliary fault on a 1500-tonne machine must not be treated like a screw issue on a 100-tonne one. FOREMAN matches on a structured fingerprint, then learns a cited recipe from every approval."
+          sub="A fix proven on one asset class must never be blindly applied to another. FOREMAN matches every case on a structured fingerprint — a hard gate that must match exactly — then learns a cited recipe from each human approval."
         />
 
         <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -527,14 +550,14 @@ function ImpactSection() {
   const stats = [
     { n: '₹48k', l: 'exposure / hr avoided', tone: '#c77b08' },
     { n: '6 units', l: 'flagged before they failed', tone: '#e23b3b' },
-    { n: '1 fault', l: 'into a fleet-wide decision', tone: '#1d84d6' },
+    { n: '1 signal', l: 'into an estate-wide decision', tone: '#1d84d6' },
     { n: '0 → 6', l: 'a flat query → the graph', tone: '#1aa251' },
   ]
   return (
     <section className="relative overflow-hidden py-24 sm:py-28">
       <div className="absolute inset-0 bg-mesh-pastel opacity-55" />
       <div className="relative mx-auto max-w-[1200px] px-6">
-        <SectionHead center eyebrow="Business impact" title="One message. One defensible decision." />
+        <SectionHead center eyebrow="Business impact" title="One signal. One defensible decision." />
         <div className="mt-14 grid grid-cols-2 gap-5 lg:grid-cols-4">
           {stats.map((s, i) => (
             <motion.div
@@ -572,7 +595,7 @@ function CTASection() {
           Watch it run, live.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-[16px] leading-relaxed text-ink-500">
-          Send a WhatsApp clip, watch the crew assemble, hear the call, and see a real ticket appear —
+          Send a signal on any channel, watch the crew assemble, hear the escalation, and see the downstream action appear —
           then send a similar one and watch FOREMAN say “I’ve seen this before.”
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
@@ -593,13 +616,11 @@ function Footer() {
     <footer className="border-t border-ink-900/[0.06] py-10">
       <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-4 px-6 sm:flex-row">
         <Logo />
-        <div className="text-[12px] text-ink-400">
-          UiPath AgentHack 2026 · Track 1 · Maestro Case · built with Claude Code
-        </div>
-        <div className="flex gap-2">
-          <Chip>Twilio</Chip>
-          <Chip>Gemini</Chip>
-          <Chip>Neo4j</Chip>
+        <div className="flex items-center gap-4">
+          <img src={uipathLogo} alt="UiPath" className="h-3.5 w-auto opacity-55" />
+          <img src={neo4jLogo} alt="Neo4j" className="h-4 w-auto opacity-55" />
+          <img src={geminiLogo} alt="Google Gemini" className="h-3.5 w-auto opacity-55" />
+          <img src={twilioLogo} alt="Twilio + WhatsApp" className="h-4 w-auto opacity-55" />
         </div>
       </div>
     </footer>

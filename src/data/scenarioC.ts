@@ -66,16 +66,51 @@ const steps: TimelineStep[] = [
     },
     log: { stage: 'intake', source: 'Storage Bucket', text: 'Media saved → bucket://media/ (5 items)', tone: 'ok' },
   },
-  { at: 2600, event: { kind: 'stage.entered', stage: 'perceive' }, log: { stage: 'perceive', source: 'Maestro', text: 'Entering Perceive — Diagnosis brain + Vision', tone: 'info' } },
+  // ── CONFIRM (triage — acknowledge the report, authorise full analysis) ─────
+  { at: 2600, event: { kind: 'stage.entered', stage: 'confirm' }, log: { stage: 'confirm', source: 'Maestro', text: 'Entering Confirm — triage the report (Action Center)', tone: 'info' } },
+  {
+    at: 3000,
+    event: {
+      kind: 'task.raised',
+      task: {
+        id: 'ACT-PV-12',
+        kind: 'confirm',
+        prompt: 'A melted MC4 connector on string RJ-S12 — hot to touch, with a photo, a thermal image and a clip. Confirm priority and authorise full analysis?',
+        options: ['proceed', 'hold'],
+        status: 'pending',
+      },
+    },
+  },
+  {
+    at: 3300,
+    event: {
+      kind: 'message',
+      message: {
+        id: 'm2',
+        from: 'foreman',
+        text: 'Got your report on RJ-S12 — a burned MC4, hot to touch. Confirming this as priority and starting the analysis now. OK to proceed?',
+        ts: '11:05',
+        options: ['Proceed', 'Hold'],
+      },
+    },
+    log: { stage: 'confirm', source: 'Action Center', text: 'Parked — waiting for the engineer to confirm priority', tone: 'warn' },
+  },
+  { at: 5600, event: { kind: 'task.answered', taskId: 'ACT-PV-12', answer: 'Proceed', by: 'A. Khan' } },
+  {
+    at: 5800,
+    event: { kind: 'message', message: { id: 'm3', from: 'worker', text: 'Yes — go ahead. It is hot to touch. 👍', ts: '11:05' } },
+    log: { stage: 'confirm', source: 'WhatsApp', text: 'Engineer confirmed — proceeding to analysis', tone: 'human' },
+  },
 
-  // ── PERCEIVE ──────────────────────────────────────────────────────────────
-  { at: 3000, event: { kind: 'agent.assembled', agent: 'supervisor' } },
-  { at: 3200, event: { kind: 'agent.running', agent: 'supervisor' }, log: { stage: 'perceive', source: 'Diagnosis & Recommendation', text: 'Reading asset history + MC4 install spec + skills', tone: 'agent' } },
-  { at: 3600, event: { kind: 'agent.assembled', agent: 'vision' } },
-  { at: 3800, event: { kind: 'agent.running', agent: 'vision' }, log: { stage: 'perceive', source: 'Vision', text: 'Reading the photo + thermal — multi-frame', tone: 'agent' } },
+  // ── PERCEIVE (multimodal vision + skill match) ────────────────────────────
+  { at: 6400, event: { kind: 'stage.entered', stage: 'perceive' }, log: { stage: 'perceive', source: 'Maestro', text: 'Entering Perceive — Diagnosis brain + Vision', tone: 'info' } },
+  { at: 6800, event: { kind: 'agent.assembled', agent: 'supervisor' } },
+  { at: 7000, event: { kind: 'agent.running', agent: 'supervisor' }, log: { stage: 'perceive', source: 'Diagnosis & Recommendation', text: 'Reading asset history + MC4 install spec + skills', tone: 'agent' } },
+  { at: 7400, event: { kind: 'agent.assembled', agent: 'vision' } },
+  { at: 7600, event: { kind: 'agent.running', agent: 'vision' }, log: { stage: 'perceive', source: 'Vision', text: 'Reading the photo + thermal — multi-frame', tone: 'agent' } },
   {
     // seed the already-learned candidate skill (2 prior MC4 burns on file)
-    at: 4200,
+    at: 8000,
     event: {
       kind: 'skill.written',
       skill: {
@@ -98,7 +133,7 @@ const steps: TimelineStep[] = [
     log: { stage: 'perceive', source: 'Context Grounding', text: 'Prior skill SK-pv-mc4-connector-burn on file (2 cases)', tone: 'info' },
   },
   {
-    at: 6200,
+    at: 10000,
     event: {
       kind: 'perception.ready',
       perception: {
@@ -112,49 +147,13 @@ const steps: TimelineStep[] = [
     },
     log: { stage: 'perceive', source: 'Vision', text: 'Melted MC4 housing · 82°C hot-spot · DC-arc risk', tone: 'danger' },
   },
-  { at: 6400, event: { kind: 'agent.completed', agent: 'vision', run: { headline: 'Melted MC4 · 82°C hot-spot', detail: 'Thermal damage at the positive contact — consistent with high-resistance cross-mating', confidence: 0.95, citations: ['mc4-connector-install-spec#crimp'] } } },
+  { at: 10200, event: { kind: 'agent.completed', agent: 'vision', run: { headline: 'Melted MC4 · 82°C hot-spot', detail: 'Thermal damage at the positive contact — consistent with high-resistance cross-mating', confidence: 0.95, citations: ['mc4-connector-install-spec#crimp'] } } },
   {
-    at: 6900,
+    at: 10700,
     event: { kind: 'skill.matched', hit: { id: 'SK-pv-mc4-connector-burn', status: 'candidate', source: 'RJ-S07' } },
     log: { stage: 'perceive', source: 'Context Grounding', text: 'Hard gate passed — matched SK-pv-mc4-connector-burn', tone: 'ok' },
   },
-  { at: 7600, event: { kind: 'agent.completed', agent: 'supervisor', run: { headline: 'Cross-mated MC4 → DC arc risk', detail: 'Matched prior skill (2 cases). Hypothesis: install workmanship, not the module batch.', confidence: 0.93, citations: ['SK-pv-mc4-connector-burn', 'pv-dc-arc-safety-bulletin#p1'] } } },
-
-  // ── CONFIRM ───────────────────────────────────────────────────────────────
-  { at: 8100, event: { kind: 'stage.entered', stage: 'confirm' }, log: { stage: 'confirm', source: 'Maestro', text: 'Entering Confirm — raising an Action Center task', tone: 'info' } },
-  {
-    at: 8500,
-    event: {
-      kind: 'task.raised',
-      task: {
-        id: 'ACT-PV-12',
-        kind: 'confirm',
-        prompt: 'Melted MC4 on string RJ-S12 with an 82°C hot-spot (DC-arc risk). Shall I (1) isolate the string DC-safe, (2) dispatch a matched-brand connector swap, (3) check the rest of the fleet?',
-        options: ['isolate_string', 'connector_swap', 'fleet_check'],
-        status: 'pending',
-      },
-    },
-  },
-  {
-    at: 8800,
-    event: {
-      kind: 'message',
-      message: {
-        id: 'm2',
-        from: 'foreman',
-        text: 'Melted MC4 on RJ-S12 with an 82°C hot-spot — that is a DC-arc risk. Shall I (1) isolate the string, (2) dispatch a matched-brand swap, (3) check the rest of the fleet?',
-        ts: '11:05',
-        options: ['1 · Isolate string', '2 · Connector swap', '3 · Fleet check'],
-      },
-    },
-    log: { stage: 'confirm', source: 'Action Center', text: 'Parked — waiting for the engineer to confirm', tone: 'warn' },
-  },
-  { at: 11800, event: { kind: 'task.answered', taskId: 'ACT-PV-12', answer: 'Yes — all three', by: 'A. Khan' } },
-  {
-    at: 12000,
-    event: { kind: 'message', message: { id: 'm3', from: 'worker', text: 'Yes — isolate it and do all three. 👍', ts: '11:05' } },
-    log: { stage: 'confirm', source: 'WhatsApp', text: 'Engineer approved — resuming the case', tone: 'human' },
-  },
+  { at: 11400, event: { kind: 'agent.completed', agent: 'supervisor', run: { headline: 'Cross-mated MC4 → DC arc risk', detail: 'Matched prior skill (2 cases). Hypothesis: install workmanship, not the module batch.', confidence: 0.93, citations: ['SK-pv-mc4-connector-burn', 'pv-dc-arc-safety-bulletin#p1'] } } },
 
   // ── INVESTIGATE (the dynamic crew — note Entitlement stays dim) ────────────
   { at: 12800, event: { kind: 'stage.entered', stage: 'investigate' }, log: { stage: 'investigate', source: 'Diagnosis & Recommendation', text: 'Assembling specialists — running in parallel', tone: 'agent' } },

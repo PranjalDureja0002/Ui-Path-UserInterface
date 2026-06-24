@@ -16,7 +16,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/app" element={<Dashboard />}>
-          <Route index element={<Navigate to="console" replace />} />
+          <Route index element={<Navigate to="cases" replace />} />
           <Route path="cases" element={<CasesTab />} />
           <Route path="console" element={<ConsoleTab />} />
           <Route path="media" element={<MediaBoardTab />} />

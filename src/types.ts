@@ -9,20 +9,20 @@
 
 export type StageId =
   | 'intake'
-  | 'perceive'
   | 'confirm'
+  | 'perceive'
   | 'investigate'
   | 'escalate'
   | 'resolve'
   | 'close'
 
 export const STAGES: { id: StageId; label: string; blurb: string }[] = [
-  { id: 'intake', label: 'Intake', blurb: 'WhatsApp → trigger' },
-  { id: 'perceive', label: 'Perceive', blurb: 'Supervisor + Vision' },
-  { id: 'confirm', label: 'Confirm', blurb: 'Action Center · parks' },
-  { id: 'investigate', label: 'Investigate', blurb: 'Dynamic crew, parallel' },
+  { id: 'intake', label: 'Intake', blurb: 'Any signal → trigger' },
+  { id: 'confirm', label: 'Confirm', blurb: 'Action Center · HITL' },
+  { id: 'perceive', label: 'Perceive', blurb: 'Multimodal vision' },
+  { id: 'investigate', label: 'Investigate', blurb: 'Dynamic specialist crew' },
   { id: 'escalate', label: 'Escalate', blurb: 'Approve + voice call' },
-  { id: 'resolve', label: 'Resolve', blurb: 'Guarded BPMN writes' },
+  { id: 'resolve', label: 'Resolve', blurb: 'Guarded downstream writes' },
   { id: 'close', label: 'Close', blurb: 'Audit + learn' },
 ]
 

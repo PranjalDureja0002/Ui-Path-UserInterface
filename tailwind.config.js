@@ -135,6 +135,10 @@ export default {
           '0%,100%': { transform: 'scaleY(0.5)' },
           '50%': { transform: 'scaleY(1)' },
         },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'pulse-ring': 'pulse-ring 1.8s cubic-bezier(0.4,0,0.6,1) infinite',
@@ -143,6 +147,7 @@ export default {
         'float-slow': 'float-slow 9s ease-in-out infinite',
         drift: 'drift 14s ease infinite',
         waveform: 'waveform 1.2s ease-in-out infinite',
+        marquee: 'marquee 40s linear infinite',
       },
     },
   },

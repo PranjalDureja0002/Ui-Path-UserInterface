@@ -35,9 +35,9 @@ export function MediaBoardTab() {
   return (
     <div className="space-y-7">
       <TabHeader
-        eyebrow="Field capture"
+        eyebrow="Multimodal capture"
         title="MediaBoard"
-        sub="Everything the field engineer sent — video, images, audio and documents, rendered in one view."
+        sub="Everything captured on the channel — video, images, audio and documents, rendered in one view."
         right={
           media.length > 0 ? (
             <>

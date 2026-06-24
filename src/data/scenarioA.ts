@@ -56,13 +56,50 @@ const steps: TimelineStep[] = [
     },
     log: { stage: 'intake', source: 'Storage Bucket', text: 'Media saved → bucket://media/clip.mp4, note.ogg', tone: 'ok' },
   },
-  { at: 2600, event: { kind: 'stage.entered', stage: 'perceive' }, log: { stage: 'perceive', source: 'Maestro', text: 'Entering Perceive — Supervisor + Vision', tone: 'info' } },
-  { at: 3000, event: { kind: 'agent.assembled', agent: 'supervisor' } },
-  { at: 3200, event: { kind: 'agent.running', agent: 'supervisor' }, log: { stage: 'perceive', source: 'Supervisor', text: 'Reading asset history + corrosion guidance', tone: 'agent' } },
-  { at: 3600, event: { kind: 'agent.assembled', agent: 'vision' } },
-  { at: 3800, event: { kind: 'agent.running', agent: 'vision' }, log: { stage: 'perceive', source: 'Vision · Gemini', text: 'Analysing picture (corrosion) + sound (knock)', tone: 'agent' } },
+  // ── CONFIRM (triage — acknowledge the report, authorise full analysis) ─────
+  { at: 2600, event: { kind: 'stage.entered', stage: 'confirm' }, log: { stage: 'confirm', source: 'Maestro', text: 'Entering Confirm — triage the report (Action Center)', tone: 'info' } },
   {
-    at: 6200,
+    at: 3000,
+    event: {
+      kind: 'task.raised',
+      task: {
+        id: 'ACT-551',
+        kind: 'confirm',
+        prompt: 'Corroded RF jumper + a knocking generator reported at DEL-0473, with a clip and a voice note. Confirm priority and authorise full analysis?',
+        options: ['proceed', 'hold'],
+        status: 'pending',
+      },
+    },
+  },
+  {
+    at: 3300,
+    event: {
+      kind: 'message',
+      message: {
+        id: 'm2',
+        from: 'foreman',
+        text: 'Got your report on DEL-0473 — RF corrosion plus a generator knock. Confirming priority and starting the analysis now. OK to proceed?',
+        ts: '14:29',
+        options: ['Proceed', 'Hold'],
+      },
+    },
+    log: { stage: 'confirm', source: 'Action Center', text: 'Parked — waiting for the tech to confirm priority', tone: 'warn' },
+  },
+  { at: 5600, event: { kind: 'task.answered', taskId: 'ACT-551', answer: 'Proceed', by: 'R. Mehta' } },
+  {
+    at: 5800,
+    event: { kind: 'message', message: { id: 'm3', from: 'worker', text: 'Yes — go ahead. 👍', ts: '14:29' } },
+    log: { stage: 'confirm', source: 'WhatsApp', text: 'Tech confirmed — proceeding to analysis', tone: 'human' },
+  },
+
+  // ── PERCEIVE (multimodal vision — read the clip + voice note) ──────────────
+  { at: 6400, event: { kind: 'stage.entered', stage: 'perceive' }, log: { stage: 'perceive', source: 'Maestro', text: 'Entering Perceive — Supervisor + Vision', tone: 'info' } },
+  { at: 6800, event: { kind: 'agent.assembled', agent: 'supervisor' } },
+  { at: 7000, event: { kind: 'agent.running', agent: 'supervisor' }, log: { stage: 'perceive', source: 'Supervisor', text: 'Reading asset history + corrosion guidance', tone: 'agent' } },
+  { at: 7400, event: { kind: 'agent.assembled', agent: 'vision' } },
+  { at: 7600, event: { kind: 'agent.running', agent: 'vision' }, log: { stage: 'perceive', source: 'Vision · Gemini', text: 'Analysing picture (corrosion) + sound (knock)', tone: 'agent' } },
+  {
+    at: 10000,
     event: {
       kind: 'perception.ready',
       perception: {
@@ -74,54 +111,13 @@ const steps: TimelineStep[] = [
     },
     log: { stage: 'perceive', source: 'Vision · Gemini', text: 'Corrosion present (high) · generator knock 0.86', tone: 'ok' },
   },
-  { at: 6400, event: { kind: 'agent.completed', agent: 'vision', run: { headline: 'Corrosion high · knock 0.86', detail: 'Salt/oxidation visible at connector; knock under load', confidence: 0.86, citations: ['corrosion-troubleshooting#p2'] } } },
+  { at: 10200, event: { kind: 'agent.completed', agent: 'vision', run: { headline: 'Corrosion high · knock 0.86', detail: 'Salt/oxidation visible at connector; knock under load', confidence: 0.86, citations: ['corrosion-troubleshooting#p2'] } } },
   {
-    at: 7000,
+    at: 10800,
     event: { kind: 'skill.matched', hit: null },
     log: { stage: 'perceive', source: 'Context Grounding', text: 'No skill card matches — reasoning from scratch', tone: 'warn' },
   },
-  { at: 7400, event: { kind: 'agent.completed', agent: 'supervisor', run: { headline: 'Perception confirmed', detail: 'Asset: non-marine RF cable, coastal site, warranty active' } } },
-
-  { at: 7900, event: { kind: 'stage.entered', stage: 'confirm' }, log: { stage: 'confirm', source: 'Maestro', text: 'Entering Confirm — raising an Action Center task', tone: 'info' } },
-  {
-    at: 8300,
-    event: {
-      kind: 'task.raised',
-      task: {
-        id: 'ACT-551',
-        kind: 'confirm',
-        prompt: 'Warranty active (NorthGrid, 32d). Looks like a spec defect + a DG fault. Shall I (1) raise a ticket, (2) open a warranty claim, (3) assess SLA risk?',
-        options: ['raise_ticket', 'warranty_claim', 'sla_risk'],
-        status: 'pending',
-      },
-    },
-  },
-  {
-    at: 8600,
-    event: {
-      kind: 'message',
-      message: {
-        id: 'm2',
-        from: 'foreman',
-        text: 'Warranty active (NorthGrid, 32d). Looks like a spec defect + a DG fault. Shall I (1) raise a ticket, (2) open a warranty claim, (3) assess SLA risk?',
-        ts: '14:29',
-        options: ['1 · Raise ticket', '2 · Warranty claim', '3 · SLA risk'],
-      },
-    },
-    log: { stage: 'confirm', source: 'Action Center', text: 'Parked — waiting for the worker to confirm', tone: 'warn' },
-  },
-  {
-    at: 11800,
-    event: { kind: 'task.answered', taskId: 'ACT-551', answer: 'Go ahead — all three', by: 'R. Mehta' },
-  },
-  {
-    at: 12000,
-    event: {
-      kind: 'message',
-      message: { id: 'm3', from: 'worker', text: 'Yes — go ahead with all three. 👍', ts: '14:29' },
-    },
-    log: { stage: 'confirm', source: 'WhatsApp', text: 'Worker approved — resuming the case', tone: 'human' },
-  },
+  { at: 11200, event: { kind: 'agent.completed', agent: 'supervisor', run: { headline: 'Perception confirmed', detail: 'Asset: non-marine RF cable, coastal site, warranty active' } } },
 
   { at: 12800, event: { kind: 'stage.entered', stage: 'investigate' }, log: { stage: 'investigate', source: 'Supervisor', text: 'Assembling the crew — running in parallel', tone: 'agent' } },
   { at: 13200, event: { kind: 'agent.assembled', agent: 'entitlement' } },

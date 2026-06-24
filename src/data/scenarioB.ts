@@ -45,11 +45,32 @@ const steps: TimelineStep[] = [
     log: { stage: 'intake', source: 'WhatsApp', text: 'Field tech reported corrosion with a clip', tone: 'human' },
   },
   { at: 1200, event: { kind: 'media.received', media: [{ kind: 'video', label: 'clip-mum.mp4' }] }, log: { stage: 'intake', source: 'Storage Bucket', text: 'Media saved → bucket://media/clip-mum.mp4', tone: 'ok' } },
-  { at: 2000, event: { kind: 'stage.entered', stage: 'perceive' }, log: { stage: 'perceive', source: 'Maestro', text: 'Entering Perceive — Supervisor + Vision', tone: 'info' } },
-  { at: 2200, event: { kind: 'agent.assembled', agent: 'vision' } },
-  { at: 2400, event: { kind: 'agent.running', agent: 'vision' }, log: { stage: 'perceive', source: 'Vision · Gemini', text: 'Analysing the clip', tone: 'agent' } },
+  // ── CONFIRM (triage — acknowledge the report, authorise the analysis) ──────
+  { at: 2000, event: { kind: 'stage.entered', stage: 'confirm' }, log: { stage: 'confirm', source: 'Maestro', text: 'Entering Confirm — triage the report (Action Center)', tone: 'info' } },
   {
-    at: 4000,
+    at: 2300,
+    event: {
+      kind: 'task.raised',
+      task: { id: 'ACT-771', kind: 'confirm', prompt: 'Corrosion on the RF jumper at MUM-0210 — the tech flagged it looks like the DEL-0473 case. Confirm priority and authorise the analysis?', options: ['proceed', 'hold'], status: 'pending' },
+    },
+  },
+  {
+    at: 2600,
+    event: {
+      kind: 'message',
+      message: { id: 'm2', from: 'foreman', text: 'Got it — green deposits on the MUM-0210 jumper, and you think it matches DEL-0473. Confirming priority and running the analysis now. OK to proceed?', ts: '09:14', options: ['Proceed', 'Hold'] },
+    },
+    log: { stage: 'confirm', source: 'Action Center', text: 'Parked — waiting for the tech to confirm priority', tone: 'warn' },
+  },
+  { at: 3800, event: { kind: 'task.answered', taskId: 'ACT-771', answer: 'Proceed', by: 'S. Naik' } },
+  { at: 4000, event: { kind: 'message', message: { id: 'm3', from: 'worker', text: 'Yes, approve. 👍', ts: '09:14' } }, log: { stage: 'confirm', source: 'WhatsApp', text: 'Tech confirmed — proceeding to analysis', tone: 'human' } },
+
+  // ── PERCEIVE (multimodal vision + skill match — seen this before) ──────────
+  { at: 4600, event: { kind: 'stage.entered', stage: 'perceive' }, log: { stage: 'perceive', source: 'Maestro', text: 'Entering Perceive — Supervisor + Vision', tone: 'info' } },
+  { at: 4800, event: { kind: 'agent.assembled', agent: 'vision' } },
+  { at: 5000, event: { kind: 'agent.running', agent: 'vision' }, log: { stage: 'perceive', source: 'Vision · Gemini', text: 'Analysing the clip', tone: 'agent' } },
+  {
+    at: 6600,
     event: {
       kind: 'perception.ready',
       perception: { corrosion: { present: true, severity: 'medium-high' }, generator_audio: { anomaly: 'none', confidence: 0.0 }, issues: ['rf_cable_corrosion'] },
@@ -57,31 +78,12 @@ const steps: TimelineStep[] = [
     },
     log: { stage: 'perceive', source: 'Vision · Gemini', text: 'Corrosion present (medium-high)', tone: 'ok' },
   },
-  { at: 4200, event: { kind: 'agent.completed', agent: 'vision', run: { headline: 'Corrosion present', detail: 'Green deposits at connector, matches the DEL pattern', confidence: 0.84 } } },
+  { at: 6800, event: { kind: 'agent.completed', agent: 'vision', run: { headline: 'Corrosion present', detail: 'Green deposits at connector, matches the DEL pattern', confidence: 0.84 } } },
   {
-    at: 4700,
+    at: 7300,
     event: { kind: 'skill.matched', hit: { id: 'SK-coastal-rf-corrosion', status: 'candidate', source: 'DEL-0473' } },
     log: { stage: 'perceive', source: 'Context Grounding', text: '✦ Skill hit — seen this before (ref DEL-0473). Passed the hard gate.', tone: 'ok' },
   },
-
-  { at: 5500, event: { kind: 'stage.entered', stage: 'confirm' }, log: { stage: 'confirm', source: 'Maestro', text: 'Entering Confirm — proposing the known fix', tone: 'info' } },
-  {
-    at: 5900,
-    event: {
-      kind: 'task.raised',
-      task: { id: 'ACT-771', kind: 'confirm', prompt: 'I have seen this before at DEL-0473 (10 days ago) — same non-marine RF cable in a coastal site. Proposing: ticket + warranty claim + cluster marine-grade. Approve?', options: ['approve', 'adjust'], status: 'pending' },
-    },
-  },
-  {
-    at: 6200,
-    event: {
-      kind: 'message',
-      message: { id: 'm2', from: 'foreman', text: 'Seen this before at DEL-0473 — same non-marine spec defect. Proposing ticket + warranty claim + cluster marine-grade. Approve?', ts: '09:14', options: ['Approve', 'Adjust'] },
-    },
-    log: { stage: 'confirm', source: 'Action Center', text: 'Parked — proposing the cited fix', tone: 'warn' },
-  },
-  { at: 8800, event: { kind: 'task.answered', taskId: 'ACT-771', answer: 'approve', by: 'S. Naik' } },
-  { at: 9000, event: { kind: 'message', message: { id: 'm3', from: 'worker', text: 'Approve. 👍', ts: '09:14' } }, log: { stage: 'confirm', source: 'WhatsApp', text: 'Worker approved the cited fix', tone: 'human' } },
 
   { at: 9800, event: { kind: 'stage.entered', stage: 'investigate' }, log: { stage: 'investigate', source: 'Supervisor', text: 'Skill passed the gate → investigate only what differs', tone: 'agent' } },
   { at: 10000, event: { kind: 'agent.assembled', agent: 'entitlement' } },

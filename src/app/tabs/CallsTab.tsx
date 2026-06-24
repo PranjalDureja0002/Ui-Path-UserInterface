@@ -19,7 +19,7 @@ export function CallsTab() {
       <TabHeader
         eyebrow="Escalation · Twilio voice"
         title="The phone call"
-        sub="Risk above 0.70 triggers a real call to the manager; FOREMAN states the case and captures the decision."
+        sub="Risk above the policy threshold triggers a real escalation call to the right approver; FOREMAN states the case and captures the decision."
       />
 
       <CallStage c={c} />
@@ -53,7 +53,7 @@ function CallStage({ c }: { c: CaseView }) {
     : connected
       ? 'Connected'
       : dialing
-        ? 'Dialing the manager…'
+        ? 'Dialing the approver…'
         : pending
           ? 'Escalation pending'
           : resolved
@@ -98,7 +98,7 @@ function CallStage({ c }: { c: CaseView }) {
           <div className="mt-3 max-w-md text-[13px] leading-relaxed text-white/75">
             {idle ? (
               pending ? (
-                'High risk — FOREMAN is preparing the escalation call to the manager.'
+                'High risk — FOREMAN is preparing the escalation call to the right approver.'
               ) : resolved ? (
                 <>Risk <span className="font-mono font-semibold text-white">{risk}</span> is below the 0.70 threshold — auto-resolved and logged.</>
               ) : (
