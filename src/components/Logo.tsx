@@ -20,7 +20,7 @@ export function Logo({
         draggable={false}
       />
       {subtitle && (
-        <span className="hidden rounded-full border border-ink-900/[0.10] bg-white px-2.5 py-1 font-mono text-[9.5px] font-medium uppercase tracking-[0.18em] text-ink-500 sm:inline-block">
+        <span className="hidden rounded-md border border-ink-900/[0.10] bg-white px-2.5 py-1 font-mono text-[9.5px] font-medium uppercase tracking-[0.18em] text-ink-500 sm:inline-block">
           {subtitle}
         </span>
       )}

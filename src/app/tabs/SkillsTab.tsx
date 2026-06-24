@@ -1,13 +1,14 @@
 import { useState, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, ArrowUpRight, Fingerprint, Quote, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Award, Fingerprint, GitBranch, Layers, Quote, Sparkles } from 'lucide-react'
 import { useStore } from '../../store/store'
-import { Badge, Chip, Empty, TabHeader } from '../../components/ui'
+import { Badge, Chip, Empty } from '../../components/ui'
 import { SkillFileModal, skillFileExists } from '../../components/SkillFileModal'
 import { clsx } from '../../lib/format'
-import type { Tone } from '../../lib/hues'
+import { TONE_HEX, type Tone } from '../../lib/hues'
 import { SKILL_LIBRARY, type LibrarySkill } from '../../data/skillLibrary'
 import type { Skill, SkillStatus } from '../../types'
+import skillImg from '../../assets/skill.png'
 
 const STATUS_TONE: Record<SkillStatus, Tone> = {
   candidate: 'warn',
@@ -24,18 +25,10 @@ export function SkillsTab() {
 
   return (
     <div className="space-y-9">
-      <TabHeader
-        eyebrow="Governed learning"
-        title="Skills"
-        sub="Every thumbs-up distills a reusable, cited recipe. Three approvals promote it to trusted — one learning loop across every asset class."
-        right={
-          list.length > 0 ? (
-            <>
-              <Chip>{list.length} learned</Chip>
-              <Chip>{list.filter((s) => s.status === 'trusted').length} trusted</Chip>
-            </>
-          ) : undefined
-        }
+      <SkillsHero
+        learned={list.length}
+        trusted={list.filter((s) => s.status === 'trusted').length}
+        domains={new Set(SKILL_LIBRARY.map((s) => s.domain)).size}
       />
 
       <LifecycleStrip hasTrusted={hasTrusted} />
@@ -76,13 +69,64 @@ function SectionLabel({ children }: { children: ReactNode }) {
   )
 }
 
+// ── Hero — the semantic-layer banner (skill.png) ────────────────────────────
+function SkillsHero({ learned, trusted, domains }: { learned: number; trusted: number; domains: number }) {
+  return (
+    <div className="relative overflow-hidden rounded-3xl border border-ink-900/[0.08] bg-[#0b1411] shadow-card-light">
+      <div className="relative grid grid-cols-1 items-stretch lg:grid-cols-[1fr_440px]">
+        <div className="p-7 sm:p-9">
+          <div className="inline-flex items-center gap-1.5 rounded-md border border-emerald-400/25 bg-emerald-400/[0.07] px-2.5 py-1 font-mono text-[10.5px] font-medium uppercase tracking-[0.18em] text-emerald-300">
+            <Sparkles size={12} /> Semantic layer · governed learning
+          </div>
+          <h1 className="mt-4 font-display text-[40px] font-bold leading-[1.02] tracking-tight text-white sm:text-[52px]">
+            Agent <span className="text-emerald-400">Skills</span>
+          </h1>
+          <p className="mt-3.5 max-w-lg text-[14px] leading-relaxed text-white/60">
+            Every thumbs-up distills a reusable, hard-gated, cited recipe — a{' '}
+            <span className="font-mono text-white/85">SKILL.md</span> card. Three approvals promote it to
+            trusted. One learning loop across every asset class.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <HeroStat icon={<Sparkles size={15} />} n={learned} l="learned this session" />
+            <HeroStat icon={<Award size={15} />} n={trusted} l="trusted" emerald />
+            <HeroStat icon={<Layers size={15} />} n={domains} l="asset domains" />
+          </div>
+        </div>
+        <div className="relative hidden lg:block">
+          <img src={skillImg} alt="Agent Skills — skills.md" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0b1411] via-[#0b1411]/35 to-transparent" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function HeroStat({ icon, n, l, emerald }: { icon: ReactNode; n: number; l: string; emerald?: boolean }) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5">
+      <span
+        className={clsx(
+          'flex h-8 w-8 items-center justify-center rounded-lg',
+          emerald ? 'bg-emerald-400/15 text-emerald-300' : 'bg-white/[0.06] text-white/70',
+        )}
+      >
+        {icon}
+      </span>
+      <div>
+        <div className="font-display text-lg font-bold leading-none text-white">{n}</div>
+        <div className="mt-0.5 text-[10.5px] text-white/45">{l}</div>
+      </div>
+    </div>
+  )
+}
+
 // ── Lifecycle strip — monochrome, restrained ────────────────────────────────
 function LifecycleStrip({ hasTrusted }: { hasTrusted: boolean }) {
   const stages = [
-    { label: 'Born', sub: 'candidate', lit: true },
-    { label: 'Reused', sub: 'matched + approved', lit: true },
-    { label: 'Promoted', sub: 'trusted', lit: hasTrusted },
-    { label: 'Retired', sub: 'superseded', lit: false },
+    { label: 'Born', sub: 'candidate', lit: true, icon: <Sparkles size={14} />, hex: '#c77b08' },
+    { label: 'Reused', sub: 'matched + approved', lit: true, icon: <GitBranch size={14} />, hex: '#1d84d6' },
+    { label: 'Promoted', sub: 'trusted', lit: hasTrusted, icon: <Award size={14} />, hex: '#1aa251' },
+    { label: 'Retired', sub: 'superseded', lit: false, icon: <ArrowRight size={14} />, hex: '#697079' },
   ]
   return (
     <div className="panel flex flex-wrap items-center gap-2.5 p-4">
@@ -90,12 +134,20 @@ function LifecycleStrip({ hasTrusted }: { hasTrusted: boolean }) {
         <div key={s.label} className="flex items-center gap-2.5">
           <div
             className={clsx(
-              'flex flex-col rounded-xl border px-3.5 py-2 transition-all',
-              s.lit ? 'border-ink-900/[0.10] bg-paper-50' : 'border-ink-900/[0.06] opacity-40',
+              'flex items-center gap-2.5 rounded-xl border px-3 py-2 transition-all',
+              s.lit ? 'border-ink-900/[0.10] bg-white' : 'border-ink-900/[0.06] opacity-40',
             )}
           >
-            <span className="text-[12.5px] font-semibold text-ink-900">{s.label}</span>
-            <span className="text-[10.5px] text-ink-400">{s.sub}</span>
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ background: `${s.hex}16`, color: s.hex }}
+            >
+              {s.icon}
+            </span>
+            <div className="flex flex-col">
+              <span className="text-[12.5px] font-semibold text-ink-900">{s.label}</span>
+              <span className="text-[10.5px] text-ink-400">{s.sub}</span>
+            </div>
           </div>
           {i < stages.length - 1 && <ArrowRight size={14} className="shrink-0 text-ink-300" />}
         </div>
@@ -107,6 +159,7 @@ function LifecycleStrip({ hasTrusted }: { hasTrusted: boolean }) {
 // ── Skill card (live learned) — calm, editorial ─────────────────────────────
 function SkillCard({ skill, index, onView }: { skill: Skill; index: number; onView: (id: string) => void }) {
   const tone = STATUS_TONE[skill.status]
+  const hex = TONE_HEX[tone]
   const hard: [string, string][] = (
     [
       ['equipment_class', skill.match_key.equipment_class],
@@ -123,8 +176,9 @@ function SkillCard({ skill, index, onView }: { skill: Skill; index: number; onVi
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="rounded-2xl border border-ink-900/[0.07] bg-white p-5 shadow-card-flat"
+      className="relative overflow-hidden rounded-2xl border border-ink-900/[0.07] bg-white p-5 pl-6 shadow-card-flat"
     >
+      <span className="absolute inset-y-0 left-0 w-1" style={{ background: hex }} />
       <div className="flex items-start justify-between gap-3">
         <div className="font-mono text-[13px] font-semibold text-ink-900">{skill.id}</div>
         <Badge tone={tone}>{skill.status}</Badge>
@@ -140,10 +194,8 @@ function SkillCard({ skill, index, onView }: { skill: Skill; index: number; onVi
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className={clsx(
-                'h-1.5 flex-1 rounded-full transition-all',
-                i < skill.approve_count ? 'bg-ink-800' : 'bg-ink-900/[0.08]',
-              )}
+              className="h-1.5 flex-1 rounded-full transition-all"
+              style={{ background: i < skill.approve_count ? hex : 'rgba(20,23,28,0.08)' }}
             />
           ))}
         </div>
@@ -265,7 +317,7 @@ function FleetLibrary({ learnedIds, onView }: { learnedIds: Set<string>; onView:
             className="group flex flex-col rounded-2xl border border-ink-900/[0.07] bg-white p-5 text-left shadow-card-flat transition-all hover:-translate-y-0.5 hover:border-ink-900/[0.14] hover:shadow-card-light"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="rounded-full border border-ink-900/[0.10] bg-paper-50 px-2.5 py-0.5 text-[10px] font-medium text-ink-500">
+              <span className="rounded-md border border-ink-900/[0.10] bg-paper-50 px-2.5 py-0.5 text-[10px] font-medium text-ink-500">
                 {s.domain}
               </span>
               <Badge tone={LIB_STATUS_TONE[s.status]}>{s.status}</Badge>
@@ -327,7 +379,7 @@ function SmartMatching() {
             <span className="text-[11px] font-semibold uppercase tracking-wide text-ink-700">
               Hard attributes
             </span>
-            <span className="rounded-full border border-ink-900/[0.12] bg-white px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wide text-ink-600">
+            <span className="rounded border border-ink-900/[0.12] bg-white px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wide text-ink-600">
               hard gate
             </span>
           </div>
@@ -352,7 +404,7 @@ function SmartMatching() {
             <span className="text-[11px] font-semibold uppercase tracking-wide text-ink-500">
               Soft attributes
             </span>
-            <span className="rounded-full border border-ink-900/[0.08] bg-white px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wide text-ink-400">
+            <span className="rounded border border-ink-900/[0.08] bg-white px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wide text-ink-400">
               confidence only
             </span>
           </div>

@@ -38,7 +38,7 @@ export function ReplayControls() {
       />
 
       {/* Transport */}
-      <div className="flex items-center gap-1 rounded-full border border-ink-900/[0.08] bg-white p-1 shadow-card-soft">
+      <div className="flex items-center gap-1 rounded-lg border border-ink-900/[0.08] bg-white p-1 shadow-card-soft">
         <IconBtn title="Restart" onClick={restart}>
           <RotateCcw size={14} />
         </IconBtn>
@@ -54,7 +54,7 @@ export function ReplayControls() {
         </IconBtn>
         <button
           onClick={cycleSpeed}
-          className="flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[11px] font-semibold text-ink-500 transition-colors hover:text-ink-900"
+          className="flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-semibold text-ink-500 transition-colors hover:text-ink-900"
           title="Playback speed"
         >
           <FastForward size={12} />

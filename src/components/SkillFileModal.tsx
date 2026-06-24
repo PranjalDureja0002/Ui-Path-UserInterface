@@ -188,7 +188,7 @@ export function SkillFileModal({ id, onClose }: { id: string | null; onClose: ()
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => { navigator.clipboard?.writeText(raw); setCopied(true); setTimeout(() => setCopied(false), 1400) }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-ink-900/[0.10] bg-white px-2.5 py-1 text-[11px] font-medium text-ink-600 transition-colors hover:bg-paper-50"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-ink-900/[0.10] bg-white px-2.5 py-1 text-[11px] font-medium text-ink-600 transition-colors hover:bg-paper-50"
                 >
                   {copied ? <Check size={12} className="text-ok" /> : <Copy size={12} />}
                   {copied ? 'Copied' : 'Copy'}
@@ -206,13 +206,13 @@ export function SkillFileModal({ id, onClose }: { id: string | null; onClose: ()
               {/* meta chips */}
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
                 {chips.map((k) => (
-                  <span key={k} className="inline-flex items-center gap-1 rounded-full border border-ink-900/[0.10] bg-paper-50 px-2 py-0.5 text-[10.5px] text-ink-600">
+                  <span key={k} className="inline-flex items-center gap-1 rounded-md border border-ink-900/[0.10] bg-paper-50 px-2 py-0.5 text-[10.5px] text-ink-600">
                     <span className="text-ink-400">{k.replace(/_/g, ' ')}</span>
                     <span className="font-mono font-medium text-ink-800">{meta[k]}</span>
                   </span>
                 ))}
                 {meta.safety_protocol === 'true' && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-danger/30 bg-danger/10 px-2 py-0.5 text-[10.5px] font-semibold text-danger">
+                  <span className="inline-flex items-center gap-1 rounded-md border border-danger/30 bg-danger/10 px-2 py-0.5 text-[10.5px] font-semibold text-danger">
                     <ShieldAlert size={11} /> safety-critical
                   </span>
                 )}

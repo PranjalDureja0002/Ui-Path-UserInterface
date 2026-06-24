@@ -53,7 +53,7 @@
 @layer components {
   /* ---- Pill chip (icon + mono label) — TwelveLabs outlined chip ---- */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-mono font-medium leading-none;
+    @apply inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-mono font-medium leading-none;
   }
   /* kept the .chip-dark name so existing usages restyle for free */
   .chip-dark {
@@ -65,7 +65,7 @@
 
   /* ---- Buttons ---- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-ink {
     @apply bg-ink-900 text-white hover:bg-ink-800 hover:shadow-glow;

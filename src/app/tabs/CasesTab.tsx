@@ -89,7 +89,7 @@ export function CasesTab() {
               <button
                 key={id}
                 onClick={() => openScenario(id)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-ink-900/[0.12] bg-white px-3.5 py-1.5 text-[11.5px] font-semibold tracking-tight text-ink-700 transition-all duration-150 hover:border-ink-900/25 hover:text-ink-900"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-ink-900/[0.12] bg-white px-3.5 py-1.5 text-[11.5px] font-semibold tracking-tight text-ink-700 transition-all duration-150 hover:border-ink-900/25 hover:text-ink-900"
               >
                 <Plus size={13} />
                 Open Case {id} · {SCENARIO_META[id].site}
@@ -153,7 +153,7 @@ function CaseCard({
       <span className="absolute inset-y-0 left-0 w-1" style={{ background: accent }} />
       <div className="flex flex-1 flex-col p-5 pl-6">
         <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/[0.08] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-700">
+          <span className="inline-flex items-center gap-1.5 rounded bg-brand-500/[0.08] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-700">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-500" /> Live
           </span>
           <Badge tone={statusTone}>{c.status}</Badge>
@@ -195,7 +195,7 @@ function PriorCard({ p, index }: { p: PriorCase; index: number }) {
       <span className="absolute inset-y-0 left-0 w-1" style={{ background: accent }} />
       <div className="flex flex-1 flex-col p-5 pl-6">
         <div className="flex items-center justify-between gap-2">
-          <span className="rounded-full bg-ink-900/[0.05] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-500">
+          <span className="rounded bg-ink-900/[0.05] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-500">
             Prior
           </span>
           <Badge tone="ok">{p.status}</Badge>

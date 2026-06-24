@@ -46,7 +46,7 @@ export function TaskCard({ task }: { task: HumanTask }) {
             <span
               key={o}
               className={clsx(
-                'rounded-full border px-2.5 py-1 font-mono text-[11px]',
+                'rounded-md border px-2.5 py-1 font-mono text-[11px]',
                 !pending && task.answer === o
                   ? 'border-ok/50 bg-ok/15 text-ok'
                   : 'border-ink-900/10 bg-white text-ink-500',

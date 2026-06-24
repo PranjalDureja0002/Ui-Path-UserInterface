@@ -19,7 +19,7 @@ import { StageRail } from '../../components/StageRail'
 import { RiskMeter } from '../../components/RiskMeter'
 import { Badge, Chip, Empty, PanelHeader } from '../../components/ui'
 import { CREW_ICON } from '../../data/crewIcons'
-import { ALWAYS_ON, SPECIALISTS, invocationFor, type CrewAgent } from '../../data/crew'
+import { ALWAYS_ON, SPECIALISTS, VISION, invocationFor, type CrewAgent } from '../../data/crew'
 import { clsx, inrCompact, pct } from '../../lib/format'
 import type { CaseView, PerceptionFinding } from '../../types'
 
@@ -242,28 +242,32 @@ function CrewStrip({ c }: { c: CaseView }) {
   const byId = Object.fromEntries(SPECIALISTS.map((s) => [s.id, s]))
   const past = (['escalate', 'resolve', 'close'] as const).some((s) => c.reachedStages.includes(s))
   const atInvestigate = c.reachedStages.includes('investigate')
-  const specStatus: CrewStatus = past ? 'done' : atInvestigate ? 'running' : 'queued'
-  const brainStatus: CrewStatus = atInvestigate ? 'done' : 'running'
+  // Perceive: only the always-on core (Vision + Brain) works. The dynamic crew is
+  // assembled later, at Investigate — so the specialists only appear from then.
+  const coreStatus: CrewStatus = atInvestigate ? 'done' : 'running'
+  const specStatus: CrewStatus = past ? 'done' : 'running'
 
   return (
     <div className="panel p-4">
       <div className="mb-3.5 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[13px] font-semibold text-ink-900">
           <Network size={14} className="text-ink-400" />
-          Crew · assembled for this case
+          {atInvestigate ? 'Crew · assembled for this case' : 'Perceiving · vision + brain'}
         </div>
         <Link to="/app/crew" className="text-[11px] font-medium text-ink-400 transition-colors hover:text-ink-700">
           all {SPECIALISTS.length} →
         </Link>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <CrewChip agent={ALWAYS_ON} status={brainStatus} brain />
-        {invoked.map((inv) => {
-          const a = byId[inv.id]
-          return a ? <CrewChip key={inv.id} agent={a} status={specStatus} /> : null
-        })}
-        {skipped.length > 0 && (
-          <span className="rounded-full border border-ink-900/[0.07] bg-paper-50 px-2.5 py-1 text-[10.5px] text-ink-400">
+        <CrewChip agent={VISION} status={coreStatus} brain />
+        <CrewChip agent={ALWAYS_ON} status={coreStatus} brain />
+        {atInvestigate &&
+          invoked.map((inv) => {
+            const a = byId[inv.id]
+            return a ? <CrewChip key={inv.id} agent={a} status={specStatus} /> : null
+          })}
+        {atInvestigate && skipped.length > 0 && (
+          <span className="rounded-md border border-ink-900/[0.07] bg-paper-50 px-2.5 py-1 text-[10.5px] text-ink-400">
             +{skipped.length} held back
           </span>
         )}
@@ -278,7 +282,7 @@ function CrewChip({ agent, status, brain }: { agent: CrewAgent; status: CrewStat
   const dot = status === 'done' ? '#1aa251' : status === 'running' ? accent : '#cbd0d6'
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium text-ink-700"
+      className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium text-ink-700"
       style={{ borderColor: `${accent}${brain ? '4d' : '2b'}`, background: brain ? `${accent}14` : `${accent}08` }}
     >
       <Icon size={13} style={{ color: accent }} />

@@ -61,8 +61,8 @@ export function FleetTab() {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <TabHeader
-        eyebrow="Fleet · Neo4j blast-radius"
-        title="One fault, the whole fleet"
+        eyebrow="Knowledge Graph · Neo4j"
+        title="One fault, the whole estate"
         sub="The connection graph finds every unit at risk — and the shared root a flat query can't see."
         right={
           fleet.systemic ? (
@@ -72,6 +72,21 @@ export function FleetTab() {
           ) : undefined
         }
       />
+
+      {c.graphNote && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2.5 rounded-xl border border-ok/30 bg-ok/[0.07] px-4 py-3 text-[12.5px] text-ink-800"
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ok/15 text-ok">
+            <Network size={15} />
+          </span>
+          <span>
+            <span className="font-semibold text-ink-900">Graph updated · learned</span> — {c.graphNote}
+          </span>
+        </motion.div>
+      )}
 
       {/* ── The punch: same data, SQL vs graph ─────────────────────────────── */}
       {fleet.sqlVsGraph && <SqlVsGraph data={fleet.sqlVsGraph} unit={unit} />}

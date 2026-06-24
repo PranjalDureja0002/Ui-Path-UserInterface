@@ -24,7 +24,7 @@ import { STAGES } from '../types'
 import { HUE_HEX, HUE_SOFT } from '../lib/hues'
 import { clsx } from '../lib/format'
 import agenticArchitecture from '../assets/agentic-architecture.png'
-import themeBlobs from '../assets/theme-blobs.png'
+import themeBlobs from '../assets/theme_new.png'
 import uipathLogo from '../assets/logos/uipath.png'
 import neo4jLogo from '../assets/logos/neo4j.png'
 import geminiLogo from '../assets/logos/gemini.png'
@@ -72,7 +72,7 @@ function LandingNav() {
             <button
               key={l.id}
               onClick={() => scrollTo(l.id)}
-              className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-ink-500 transition-colors hover:text-ink-900"
+              className="rounded-lg px-3.5 py-1.5 text-[13px] font-medium text-ink-500 transition-colors hover:text-ink-900"
             >
               {l.label}
             </button>
@@ -253,7 +253,7 @@ function ConductorSection() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 text-ink-800 shadow-sm">
                   <w.icon size={20} />
                 </div>
-                <span className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ink-700">
+                <span className="rounded-md bg-white/70 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ink-700">
                   {w.tag}
                 </span>
               </div>
@@ -407,7 +407,7 @@ function StoresSection() {
       <div className="mx-auto max-w-[1200px] px-6">
         <SectionHead
           eyebrow="What makes it state of the art"
-          title="The intelligence others can’t copy."
+          title="Intelligence that compounds."
           sub="A self-learning knowledge graph, a semantic skill memory, multimodal perception and a dynamic agent crew — open by design and governed end to end."
         />
         <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -549,10 +549,10 @@ function MatchingLearning() {
 // ── Impact stats ────────────────────────────────────────────────────────────
 function ImpactSection() {
   const stats = [
-    { n: '₹48k', l: 'exposure / hr avoided', tone: '#c77b08' },
-    { n: '6 units', l: 'flagged before they failed', tone: '#e23b3b' },
-    { n: '1 signal', l: 'into an estate-wide decision', tone: '#1d84d6' },
-    { n: '0 → 6', l: 'a flat query → the graph', tone: '#1aa251' },
+    { n: '↓ 65%', l: 'mean time to resolution', tone: '#1d84d6' },
+    { n: '+40%', l: 'first-time-fix rate', tone: '#1aa251' },
+    { n: '60%', l: 'auto-resolved without escalation', tone: '#c77b08' },
+    { n: '↓ 50%', l: 'repeat failures, estate-wide', tone: '#7c5cdb' },
   ]
   return (
     <section className="relative overflow-hidden py-16 sm:py-24 lg:py-28">

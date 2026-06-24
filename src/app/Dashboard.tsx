@@ -25,7 +25,7 @@ const TABS = [
   { to: 'crew', label: 'Crew', icon: Users },
   { to: 'calls', label: 'Calls', icon: Phone },
   { to: 'skills', label: 'Skills', icon: Sparkles },
-  { to: 'fleet', label: 'Fleet', icon: GitBranch },
+  { to: 'fleet', label: 'Knowledge Graph', icon: GitBranch },
   { to: 'audit', label: 'Audit', icon: FileText },
 ]
 
@@ -58,14 +58,14 @@ export function Dashboard() {
           </Link>
 
           {activeCase && (
-            <div className="flex items-center gap-2 rounded-full border border-ink-900/[0.08] bg-white px-3 py-1.5 shadow-card-soft">
+            <div className="flex items-center gap-2 rounded-md border border-ink-900/[0.08] bg-white px-3 py-1.5 shadow-card-soft">
               <PhoneCall size={13} className="text-ink-400" />
               <span className="font-mono text-[11px] text-ink-700">{activeCase.case_id}</span>
               <span className="text-ink-300">·</span>
               <span className="font-mono text-[11px] text-ink-500">{activeCase.site_id}</span>
               <span
                 className={clsx(
-                  'ml-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+                  'ml-1 rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
                   STATUS_TONE[activeCase.status] ?? 'text-ink-500',
                 )}
               >
@@ -120,7 +120,7 @@ export function Dashboard() {
 function LiveBadge() {
   return (
     <div className="flex items-center justify-end gap-2.5">
-      <span className="inline-flex items-center gap-2 rounded-full border border-ok/30 bg-ok/[0.07] px-3 py-1.5 text-[12px] font-semibold text-ok">
+      <span className="inline-flex items-center gap-2 rounded-md border border-ok/30 bg-ok/[0.07] px-3 py-1.5 text-[12px] font-semibold text-ok">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-70" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-ok" />

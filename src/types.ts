@@ -18,10 +18,10 @@ export type StageId =
 
 export const STAGES: { id: StageId; label: string; blurb: string }[] = [
   { id: 'intake', label: 'Intake', blurb: 'Any signal → trigger' },
-  { id: 'confirm', label: 'Confirm', blurb: 'Action Center · HITL' },
+  { id: 'confirm', label: 'Confirm', blurb: 'Completeness · Asset ID' },
   { id: 'perceive', label: 'Perceive', blurb: 'Multimodal vision' },
-  { id: 'investigate', label: 'Investigate', blurb: 'Dynamic specialist crew' },
-  { id: 'escalate', label: 'Escalate', blurb: 'Approve + voice call' },
+  { id: 'investigate', label: 'Investigate', blurb: 'Dynamic crew → SOP' },
+  { id: 'escalate', label: 'Escalate', blurb: 'Action Center → call' },
   { id: 'resolve', label: 'Resolve', blurb: 'Guarded downstream writes' },
   { id: 'close', label: 'Close', blurb: 'Audit + learn' },
 ]

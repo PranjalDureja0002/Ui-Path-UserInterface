@@ -168,7 +168,7 @@ function Orchestration({ invokedIds }: { invokedIds: Set<string> }) {
         </motion.div>
 
         {/* Supervisor label */}
-        <div className="absolute left-1/2 top-[30%] z-20 -translate-x-1/2 rounded-full border border-ink-900/[0.10] bg-white/95 px-3 py-1 text-[10px] font-semibold text-ink-800 shadow-sm backdrop-blur-sm">
+        <div className="absolute left-1/2 top-[30%] z-20 -translate-x-1/2 rounded-md border border-ink-900/[0.10] bg-white/95 px-3 py-1 text-[10px] font-semibold text-ink-800 shadow-sm backdrop-blur-sm">
           Supervisor · orchestrator
         </div>
 
@@ -224,7 +224,7 @@ function CoreNode({ agent, x, y, brain }: { agent: CrewAgent; x: number; y: numb
         {agent.short}
       </div>
       {brain && (
-        <div className="mt-1 rounded-full bg-brand-500/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-brand-600">
+        <div className="mt-1 rounded bg-brand-500/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-brand-600">
           always on
         </div>
       )}
@@ -342,16 +342,16 @@ function SpecialistCard({ agent, inv, invoked, index }: { agent: CrewAgent; inv:
         </div>
         {invoked ? (
           agent.safety ? (
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9.5px] font-semibold" style={{ background: `${AMBER}16`, color: AMBER, border: `1px solid ${AMBER}33` }}>
+            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[9.5px] font-semibold" style={{ background: `${AMBER}16`, color: AMBER, border: `1px solid ${AMBER}33` }}>
               <ShieldAlert size={10} /> can block
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9.5px] font-semibold" style={{ background: `${BRAND}14`, color: BRAND, border: `1px solid ${BRAND}30` }}>
+            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[9.5px] font-semibold" style={{ background: `${BRAND}14`, color: BRAND, border: `1px solid ${BRAND}30` }}>
               <Check size={10} /> invoked
             </span>
           )
         ) : (
-          <span className="inline-flex items-center gap-1 rounded-full border border-ink-900/[0.08] bg-white px-2 py-0.5 text-[9.5px] font-medium text-ink-400">
+          <span className="inline-flex items-center gap-1 rounded-md border border-ink-900/[0.08] bg-white px-2 py-0.5 text-[9.5px] font-medium text-ink-400">
             <X size={10} /> held back
           </span>
         )}

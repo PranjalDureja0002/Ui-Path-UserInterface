@@ -30,11 +30,11 @@ export function LogoMarquee() {
       <div className="mx-auto max-w-[1340px] px-6">
         <div className="group flex items-center gap-5">
           {/* fixed "Built on" pill — the chain scrolls past it */}
-          <div className="relative z-10 flex shrink-0 items-center gap-2 rounded-full border border-ink-900/[0.08] bg-white px-3.5 py-2 shadow-card-soft">
+          <div className="relative z-10 flex shrink-0 items-center gap-2 rounded-lg border border-ink-900/[0.08] bg-white px-3.5 py-2 shadow-card-soft">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500/12 text-brand-600">
               <Layers size={13} />
             </span>
-            <span className="whitespace-nowrap text-[12.5px] font-semibold text-ink-700">Built on</span>
+            <span className="whitespace-nowrap text-[12.5px] font-semibold text-ink-700">Built Using</span>
           </div>
 
           {/* moving chain */}

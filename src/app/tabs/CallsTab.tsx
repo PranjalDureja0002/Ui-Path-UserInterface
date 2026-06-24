@@ -139,7 +139,7 @@ function CallPill({
 function DarkPill({ children, hex, pulse, live }: { children: ReactNode; hex: string; pulse?: boolean; live?: boolean }) {
   return (
     <span
-      className={clsx('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold', pulse && 'animate-pulse')}
+      className={clsx('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold', pulse && 'animate-pulse')}
       style={{ background: `${hex}22`, color: hex, border: `1px solid ${hex}44` }}
     >
       <span className="relative flex h-2 w-2">
@@ -231,7 +231,7 @@ function DecisionCard({ call }: { call: CallState }) {
           {d.actions.map((a) => (
             <span
               key={a}
-              className="inline-flex items-center gap-1.5 rounded-full border border-ok/30 bg-ok/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-ok"
+              className="inline-flex items-center gap-1.5 rounded-md border border-ok/30 bg-ok/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-ok"
             >
               <CheckCircle2 size={11} />
               {a}

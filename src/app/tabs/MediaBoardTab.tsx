@@ -320,7 +320,7 @@ function DocumentCard({ m }: { m: MediaItem }) {
           <div className="text-[13px] font-semibold text-ink-900">{m.label}</div>
           <div className="font-mono text-[10.5px] text-ink-400">{m.meta}</div>
           {m.note && <div className="mt-2 text-[12px] leading-relaxed text-ink-500">{m.note}</div>}
-          <button className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-ink-900/[0.10] bg-white px-3 py-1.5 text-[11.5px] font-medium text-ink-700 transition-colors hover:bg-paper-50">
+          <button className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-ink-900/[0.10] bg-white px-3 py-1.5 text-[11.5px] font-medium text-ink-700 transition-colors hover:bg-paper-50">
             <ExternalLink size={12} /> Open
           </button>
         </div>
