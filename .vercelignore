@@ -1,0 +1,12 @@
+# Vercel hosts ONLY the Vite UI. The Python backends go to Render (see render.yaml / DEPLOY.md).
+# Excluding them here keeps Vercel from auto-detecting/deploying them as functions.
+server/
+VoiceAgent/
+Vision-Agent-Coded/
+knowledge-Agent/
+render.yaml
+DEPLOY.md
+uipath-assets/
+**/*.py
+**/__uipath/
+**/.venv/

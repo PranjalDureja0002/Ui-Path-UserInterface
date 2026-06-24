@@ -37,3 +37,5 @@ uipath-assets/
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+.vercel
