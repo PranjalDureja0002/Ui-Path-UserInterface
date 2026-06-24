@@ -42,7 +42,7 @@ export function Dashboard() {
   const activeCase = useStore((s) => (s.activeCaseId ? s.cases[s.activeCaseId] : null))
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-page">
+    <div className="relative flex min-h-screen flex-col bg-page [overflow-x:clip]">
       {/* Clean enterprise canvas — a cool, near-neutral wash with the faintest brand tint */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-paper-50 via-page to-page" />
@@ -52,7 +52,7 @@ export function Dashboard() {
 
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-ink-900/[0.07] bg-white/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-5 gap-y-3 px-5 py-3">
+        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-5 gap-y-3 px-4 py-3 sm:px-5">
           <Link to="/" className="shrink-0">
             <Logo subtitle="Control Room" size={30} />
           </Link>
@@ -74,7 +74,7 @@ export function Dashboard() {
             </div>
           )}
 
-          <div className="ml-auto min-w-[280px] flex-1">
+          <div className="w-full sm:ml-auto sm:w-auto sm:min-w-[280px] sm:flex-1">
             {FEED_MODE === 'live' ? <LiveBadge /> : <ReplayControls />}
           </div>
         </div>
@@ -110,7 +110,7 @@ export function Dashboard() {
       </header>
 
       {/* Content */}
-      <main className="mx-auto w-full max-w-[1500px] flex-1 px-5 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-6 sm:px-6 sm:py-8">
         <Outlet />
       </main>
     </div>

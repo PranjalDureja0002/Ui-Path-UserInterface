@@ -36,7 +36,7 @@ function scrollTo(id: string) {
 
 export function Home() {
   return (
-    <div className="min-h-screen bg-page text-ink-700">
+    <div className="min-h-screen bg-page text-ink-700 [overflow-x:clip]">
       <LandingNav />
       <Hero />
       <LogoMarquee />
@@ -63,7 +63,7 @@ function LandingNav() {
     <header className="fixed inset-x-0 top-0 z-50">
       {/* soft scrim so the nav merges with the page at the top, fading to transparent */}
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[120%] bg-gradient-to-b from-page via-page/85 to-transparent" />
-      <div className="mx-auto flex max-w-[1340px] items-center justify-between gap-4 px-6 py-5">
+      <div className="mx-auto flex max-w-[1340px] items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5">
         <Link to="/">
           <Logo />
         </Link>
@@ -78,8 +78,9 @@ function LandingNav() {
             </button>
           ))}
         </nav>
-        <Link to="/app" className="btn btn-ink !px-4 !py-2 !text-[13px]">
-          Launch Control Room
+        <Link to="/app" className="btn btn-ink !px-3.5 !py-2 !text-[13px]">
+          <span className="sm:hidden">Launch</span>
+          <span className="hidden sm:inline">Launch Control Room</span>
           <ArrowRight size={15} />
         </Link>
       </div>
@@ -90,7 +91,7 @@ function LandingNav() {
 // ── Hero ────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section className="relative flex min-h-[90vh] items-center overflow-hidden pb-24 pt-32">
+    <section className="relative flex min-h-[88vh] items-center overflow-hidden pb-16 pt-28 sm:min-h-[90vh] sm:pb-24 sm:pt-32">
       {/* clean, even background with a whisper of cool colour */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-paper-100 via-page to-paper-100" />
       <div className="pointer-events-none absolute -right-[6%] -top-[14%] -z-10 h-[640px] w-[780px] rounded-full bg-pastel-sky/25 blur-[150px]" />
@@ -232,7 +233,7 @@ function ConductorSection() {
     },
   ]
   return (
-    <section id="idea" className="py-24 sm:py-28">
+    <section id="idea" className="py-16 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6">
         <SectionHead
           eyebrow="The one idea"
@@ -279,7 +280,7 @@ function ConductorSection() {
 // ── How it works — pastel gradient, 7 stages + image ────────────────────────
 function HowItWorks() {
   return (
-    <section id="how" className="relative overflow-hidden py-24 sm:py-28">
+    <section id="how" className="relative overflow-hidden py-16 sm:py-24 lg:py-28">
       <div className="absolute inset-0 bg-mesh-pastel-soft opacity-80" />
       <div className="relative mx-auto max-w-[1200px] px-6">
         <SectionHead
@@ -402,7 +403,7 @@ function StoresSection() {
     },
   ]
   return (
-    <section id="capabilities" className="py-24 sm:py-28">
+    <section id="capabilities" className="py-16 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6">
         <SectionHead
           eyebrow="What makes it state of the art"
@@ -464,7 +465,7 @@ function MatchingLearning() {
   const hard = ['equipment_class', 'component', 'capacity_band', 'failure_mode']
   const soft = ['environment', 'vendor']
   return (
-    <section id="learning" className="bg-white/60 py-24 sm:py-28">
+    <section id="learning" className="bg-white/60 py-16 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6">
         <SectionHead
           eyebrow="Careful enough for the real world"
@@ -554,7 +555,7 @@ function ImpactSection() {
     { n: '0 → 6', l: 'a flat query → the graph', tone: '#1aa251' },
   ]
   return (
-    <section className="relative overflow-hidden py-24 sm:py-28">
+    <section className="relative overflow-hidden py-16 sm:py-24 lg:py-28">
       <div className="absolute inset-0 bg-mesh-pastel opacity-55" />
       <div className="relative mx-auto max-w-[1200px] px-6">
         <SectionHead center eyebrow="Business impact" title="One signal. One defensible decision." />
@@ -583,7 +584,7 @@ function ImpactSection() {
 // ── CTA ─────────────────────────────────────────────────────────────────────
 function CTASection() {
   return (
-    <section className="relative overflow-hidden py-28">
+    <section className="relative overflow-hidden py-20 sm:py-28">
       <div className="pointer-events-none absolute inset-0 bg-blob-cool opacity-40" />
       <div className="relative mx-auto max-w-3xl px-6 text-center">
         <div className="mx-auto mb-6 flex w-fit items-center gap-2">
